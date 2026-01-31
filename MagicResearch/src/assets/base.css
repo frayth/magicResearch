@@ -84,3 +84,33 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+.water{
+  color: rgb(56, 56, 231);
+
+}
+.fire{
+  color: red;
+
+}
+.mana{
+  color: purple;
+
+}
+.richText {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  font-weight: bold;
+}
+.coins{
+    color: gold;
+
+}
+.stone{
+    color: rgb(172, 169, 169);
+
+}
+.tips{
+  font-style: italic;
+}
