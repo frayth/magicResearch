@@ -29,7 +29,7 @@ export function useConjurationSchoolSpells(){
         const spellIsCastable=SpellIsCastable(this)
         if(spellIsCastable){
           wizardStore.removeResources("mana",this.cost)
-          wizardStore.addBonus("water",2)
+          wizardStore.addRessources("water",2)
         }
       }
     },
@@ -46,7 +46,7 @@ export function useConjurationSchoolSpells(){
         const spellIsCastable=SpellIsCastable(this)
         if(spellIsCastable){
           wizardStore.removeResources("mana",this.cost)
-          wizardStore.addBonus("stone",5)
+          wizardStore.addRessources("stone",5)
         }
       }
     }

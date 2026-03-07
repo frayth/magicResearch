@@ -1,6 +1,8 @@
+import Cheat from "@/components/Modals/elements/cheatModal.vue";
 import type {BuildingId} from "../data/buildings.data";
 export type Schools = 'illusion' | 'conjuration' | 'enchantement'
 import type {UnlockName} from "../data/unlocks.data";
+import type { EasingType } from "@/composable/UseValueByLevel";
 export interface Spell {
   name: string
   id:string,
@@ -37,8 +39,8 @@ export interface Building {
   name: string
   id:string
   level: number
-  exponentialProduction: number
-  bonus: number,
+  levelMax: number
+  easings:EasingType
   effects: {
     ressources?:{
       [k in RessourcesKey]?: number
@@ -50,13 +52,13 @@ export interface Building {
   cost: {
     level: number
     cost: {
-      [k in RessourcesKey]?: number
+      [k in RessourcesKey]?: {minValue:number,maxValue:number}
     }
   }[]
 }
 
 export interface BuildingWizard {
-  cost: { currentLevel: { [k in RessourcesKey]?: number }; nextLevel: { [k in RessourcesKey]?: number } }
+  cost: { [k in RessourcesKey]?:number}
   effects:{
     ressources?:{
       [key: string]: number
@@ -65,18 +67,17 @@ export interface BuildingWizard {
       [key: string]: number
     }
   }
-  bonus: number,
   level: number
+  levelMax :number
   name: string
-  id:string
-  exponentialProduction: number
+  id:BuildingId
 }
 export type RessourcesKey = keyof BaseProduction
 type RessourcesEffects={
   [k in RessourcesKey]?: number
 }
 
-type MultipliersKey = keyof Pick<BaseMultipliers, "prodmana" | "prodwater" | "prodstone" | "manualmana" | "manualwater" | "manamax" | "watermax" | "stonemax" | "prodcoins" | "coinsmax" >
+type MultipliersKey = keyof Pick<BaseMultipliers, "prodmana" | "prodwater" | "prodstone" | "manualmana" | "manualwater" | "manamax" | "watermax" | "stonemax" | "prodcoins" | "coinsmax"|"woodmax"|"prodwood" >
 type MultipliersEffects={
   [k in MultipliersKey]?: number
 }
@@ -94,16 +95,34 @@ export interface Buff {
   }
   unique:boolean
 }
+export type SaveRessources={
+  ressources:BaseProduction
+  baseProduction:BaseProduction
+  baseMultipliers:BaseMultipliers
+}
+export type SaveBuildings={
+  id:BuildingId,
+  level:number
+}[]
 
+export type SaveSchools = Pick<School,'name' | 'currentXp' | 'level' | 'numberOfapprentice'>[]
+
+export type SaveUnlocks={
+  name:UnlockName,
+  unlock:boolean
+}[]
 export interface BaseProduction {
   mana: number
   water: number
+  wood:number
   coins:number
   stone: number
   manamax: number
+  woodmax:number
   watermax: number
   stonemax: number
   coinsmax:number
+  prodwood:number
   prodcoins:number
   prodmana: number
   prodwater: number
@@ -116,11 +135,14 @@ export interface Ressources {
   mana: number
   coins:number
   water: number
+  wood:number
   stone: number
   manamax: number
+  woodmax:number
   watermax: number
   stonemax: number
   prodmana: number
+  prodwood:number
   prodwater: number
   prodstone: number
 }
@@ -128,7 +150,10 @@ export interface Ressources {
 export interface BaseMultipliers extends BaseProduction {
   manualmana: number
   manualwater: number
+  manualwood:number
 }
 
 
-export type IncrementalRessources = "mana" | "water" | "stone" | "coins"
+export type IncrementalRessources = "mana" | "water" | "stone" | "coins" | "wood"
+
+export type ModalComponent = typeof Cheat

@@ -22,6 +22,10 @@ export function useRichText(size: Ref<number | undefined, number | undefined>) {
       name: 'Pierre',
       icon: '/icones/stone.png',
     },
+    wood: {
+      name: 'Bois',
+      icon: '/icones/wood.png',
+    },
   }
  // exemple &water.name.value:+8& ou &water.name& ou &water&
 const parse = (text: string) => {

@@ -1,59 +1,69 @@
 <template>
-<div>
-      <h2>Rassembler</h2>
-      <div>
-        <ButtonProduction name="mana" />
-        <RichText
-          >Concentre tes pensées et rassemble du mana. &mana.value:+1&</RichText
-        >
-        <p class="tips">Astuce : tu peux appuyer et maintenir les
-          boutons pour les activer automatiquement !</p>
-
-      </div>
+  <div>
+    <h2>Rassembler</h2>
+    <div>
+      <ButtonProduction name="mana" />
+      <RichText>Concentre tes pensées et rassemble du mana. &mana.value:+1&</RichText>
+      <p class="tips">
+        Astuce : tu peux appuyer et maintenir les boutons pour les activer automatiquement !
+      </p>
+    </div>
+    <div v-if="unlockStore.checkUnlockStatus('Forêt')">
+      <ButtonProduction name="wood" />
+      <RichText>Concentre tes pensées et rassemble du bois. &wood.value:+1&</RichText>
+    </div>
     <div v-if="unlockStore.checkUnlockStatus('Puit d\'eau')">
       <ButtonProduction name="water" />
+      <RichText>Concentre tes pensées et rassemble de l'eau. &water.value:+1&</RichText>
+    </div>
+  </div>
+  <div>
+    <h2>Mana</h2>
+    <div v-if="unlockStore.checkUnlockStatus('Puit de mana')">
+      <ButtonBuilding id="puitDeMana" />
       <RichText
-        >Concentre tes pensées et rassemble de l'eau. &water.value:+1&</RichText
+        >Génére automatiquement du mana et remplie ta réserve. &mana.value:+0.5.time&</RichText
+      >
+      <CostElement id="puitDeMana" />
+    </div>
+    <div v-if="unlockStore.checkUnlockStatus('Manashard')">
+      <ButtonBuilding id="eclatdemana" />
+      <RichText>Augmente la quantité de mana que tu peux stocker. &mana.value:+100.max& </RichText>
+      <RichText class="tips"
+        >Tip:Tu peux avoir plus de &coin.name& avec le sort d'illusion, Tour de magie!</RichText
+      >
+      <CostElement id="eclatdemana" />
+    </div>
+  </div>
+
+  <div>
+    <h2>Eau</h2>
+    <div v-if="unlockStore.checkUnlockStatus('Cascade')">
+      <ButtonBuilding id="cascade" />
+      <RichText
+        >Génére automatiquement de l'au et remplie ta réserve. &water.value:+0.5.time&</RichText
       >
     </div>
+  </div>
+  <div>
+    <h2>Stockage</h2>
+    <div v-if="unlockStore.checkUnlockStatus('Entrepot')">
+      <ButtonBuilding id="entrepot" />
+      <RichText
+        >Augmente la quantité de &stone.name& que tu peux stocker. &stone.value:+400.max&
+      </RichText>
+      <CostElement id="entrepot" />
     </div>
-    <div>
-      <h2>Mana</h2>
-      <div v-if="unlockStore.checkUnlockStatus('Puit de mana')">
-        <ButtonBuilding id="puitDeMana" />
-        <RichText
-          >Génére automatiquement du mana et remplie ta réserve. &mana.value:+0.5.time&</RichText
-        >
-        <CostElement id="puitDeMana" />
-      </div>
-      <div v-if="unlockStore.checkUnlockStatus('Manashard')" >
-        <ButtonBuilding id="eclatdemana" />
-        <RichText>Augmente la quantité de mana que tu peux stocker. &mana.value:+100.max& </RichText>
-        <RichText class="tips">Tip:Tu peux avoir plus de  &coin.name& avec le sort d'illusion, Tour de magie!</RichText>
-         <CostElement id="eclatdemana" />
-      </div>
-    </div>
-
-    <div>
-      <h2>Eau</h2>
-      <div v-if="unlockStore.checkUnlockStatus('Cascade')">
-        <ButtonBuilding id="cascade" />
-        <RichText
-          >Génére automatiquement de l'au et remplie ta réserve. &water.value:+0.5.time&</RichText
-        >
-      </div>
-    </div>
-
+  </div>
 </template>
 
 <script setup lang="ts">
-import ButtonProduction from '../buttons/ButtonProduction.vue';
-import ButtonBuilding from '../buttons/buttonBuilding.vue';
-import { useUnlockStore } from '@/stores/unlock';
+import ButtonProduction from '../buttons/ButtonProduction.vue'
+import ButtonBuilding from '../buttons/buttonBuilding.vue'
+import { useUnlockStore } from '@/stores/unlock'
 import RichText from '@/components/UI/RichText.vue'
-import CostElement from '../UI/CostElement.vue';
+import CostElement from '../UI/CostElement.vue'
 const unlockStore = useUnlockStore()
-
 </script>
 
 <style scoped>
@@ -132,4 +142,5 @@ span.richText.mana {
 
 span.richText.water {
   color: #3b82f6; /* bleu pour eau */
-}</style>
+}
+</style>

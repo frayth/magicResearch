@@ -50,6 +50,24 @@ const unlocksData = [
     },
     locked: true,
   },
+  {
+    name:'Entrepot',
+    conditions:{
+      ressources:[["stone",50]] as [RessourcesKey, number][],
+      buildings:[] as { name: BuildingId; level: number }[],
+      unlocks:[],
+    },
+    locked:true
+  },
+  {
+    name:'Forêt',
+    conditions:{
+      ressources:[["coins",100]] as [RessourcesKey, number][],
+      buildings:[] as { name: BuildingId; level: number }[],
+      unlocks:['Entrepot'],
+    },
+    locked:true
+  }
 ] as const
 
 export type UnlockName = (typeof unlocksData)[number]['name']

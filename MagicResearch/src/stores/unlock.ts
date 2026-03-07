@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useWizardStore } from './wizard'
 import type { UnlockName } from '@/data/unlocks.data'
 import { unlocks as unlocksData } from '@/data/unlocks.data'
-import type { Unlock } from '@/types/ressources'
+import type { SaveUnlocks, Unlock } from '@/types/ressources'
 export const useUnlockStore = defineStore('unlock', () => {
   const wizardStore = useWizardStore()
   const unlocks = ref<Unlock[]>(unlocksData)
@@ -46,6 +46,23 @@ export const useUnlockStore = defineStore('unlock', () => {
       const unlock=unlocks.value.find(unlock=>unlock.name==='Manashard')
       if(wizardStore.ressources.mana >= wizardStore.ressources.manamax && unlock) unlock.unlock=true // si mana === mana Max
     }
+    if(!unlocks.value.find(unlock=>unlock.name==='Entrepot')?.unlock){
+      const unlock=unlocks.value.find(unlock=>unlock.name==='Entrepot')
+      if(wizardStore.ressources.stone >= wizardStore.ressources.stonemax && unlock) unlock.unlock=true // si stone === stone Max
+    }
   }
-  return { init, unlocks, checkUnlocks, checkUnlockStatus }
+  function setUnlock(array:SaveUnlocks){
+    unlocks.value.forEach(unlock=>{
+      const unlockSave=array.find(unlockSave=>unlockSave.name===unlock.name)
+      if(unlockSave){
+        unlock.unlock=unlockSave.unlock
+      }
+    })
+  }
+  function reset(){
+    unlocks.value.forEach(unlock=>{
+      unlock.unlock=false
+    })
+  }
+  return { init, unlocks, checkUnlocks, checkUnlockStatus,setUnlock,reset }
 })

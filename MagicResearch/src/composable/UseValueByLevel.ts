@@ -71,6 +71,8 @@ interface UseValueByLevelOptions {
   endValue: number;
   /** Niveau maximum */
   maxLevel: number;
+  /** Niveau minimum */
+  minLevel: number;
   /** Type de fonction d'accélération à utiliser (default: 'cubic') */
   easing?: EasingType;
 }
@@ -98,6 +100,7 @@ export function useValueByLevel(options: UseValueByLevelOptions) {
     startValue,
     endValue,
     maxLevel,
+    minLevel,
     easing = 'cubic',
   } = options;
 
@@ -108,10 +111,10 @@ export function useValueByLevel(options: UseValueByLevelOptions) {
     const currentLevel = typeof level === 'number' ? level : level.value;
 
     // Clamp le niveau entre 1 et maxLevel
-    const clampedLevel = Math.max(0, Math.min(currentLevel, maxLevel));
+    const clampedLevel = Math.max(minLevel, Math.min(currentLevel, maxLevel));
 
     // Calcule la progression normalisée (0 à 1)
-    const progress = (clampedLevel - 0) / (maxLevel - 0);
+    const progress = (clampedLevel - minLevel) / (maxLevel - minLevel);
 
     // Applique la fonction d'easing
     const easingFn = easingFunctions[easing];

@@ -31,7 +31,7 @@ export function useIllusionSchoolSpells(){
     const spellIsCastable=SpellIsCastable(this)
     if(spellIsCastable){
       wizardStore.removeResources("mana",this.cost)
-      wizardStore.addBonus("coins",math.RandomValue(30,36))
+      wizardStore.addRessources("coins",math.RandomValue(30,36))
     }
   },
 

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { computed, reactive, ref } from 'vue'
-import type { School, Spell } from '@/types/ressources'
+import type { SaveSchools, School, Spell } from '@/types/ressources'
 import { useConjurationSchoolSpells } from '@/composable/conjurationSchoolSpells'
 import { useIllusionSchoolSpells } from '@/composable/illusionSchoolSpells'
 import { useEnchantementSchoolSpells } from '@/composable/enchantementSchoolSpells'
@@ -106,7 +106,23 @@ export const useSchoolsStore = defineStore('schools', () => {
       return formatTime(timeForLevelUp)
     }
   }
-  
+  function setSchools(saveSchool:SaveSchools){
+    schools.value.forEach(school=>{
+      const currentSchool = saveSchool.find(s=>s.name === school.name)
+      if (currentSchool) {
+        school.level = currentSchool.level
+        school.currentXp = currentSchool.currentXp
+        school.numberOfapprentice = currentSchool.numberOfapprentice
+      }
+    })
+  }
+  function reset(){
+    schools.value.forEach(school=>{
+      school.level = 1
+      school.currentXp = 0
+      school.numberOfapprentice = 0
+    })
+  }
   return {
     schools,
     illusionSchools,
@@ -121,5 +137,7 @@ export const useSchoolsStore = defineStore('schools', () => {
     schoolsName,
     castSpell,
     timeForLevelUp,
+    setSchools,
+    reset
   }
 })
