@@ -35,6 +35,14 @@
       <CostElement id="eclatdemana" />
     </div>
   </div>
+  <div>
+    <h2>Production</h2>
+    <div v-if="unlockStore.checkUnlockStatus('lumberYard')">
+      <ButtonBuilding id="lumberYard" />
+      <RichText>Coupe les branches et les arbres. Génére atomatiquement du bois  &wood.value:+1.time& </RichText>
+      <CostElement id="lumberYard" />
+    </div>
+  </div>
 
   <div>
     <h2>Eau</h2>
@@ -50,9 +58,16 @@
     <div v-if="unlockStore.checkUnlockStatus('Entrepot')">
       <ButtonBuilding id="entrepot" />
       <RichText
-        >Augmente la quantité de &stone.name& que tu peux stocker. &stone.value:+400.max&
+        >Augmente la quantité de ressources que tu peux stocker. &stone.value:+400.max& &wood.value:+400.max&
       </RichText>
       <CostElement id="entrepot" />
+    </div>
+        <div v-if="unlockStore.checkUnlockStatus('Storage water')">
+      <ButtonBuilding id="waterTank" />
+      <RichText
+        >Permet de stocker plus d'eau. &water.value:+250.max&
+      </RichText>
+      <CostElement id="waterTank" />
     </div>
   </div>
 </template>

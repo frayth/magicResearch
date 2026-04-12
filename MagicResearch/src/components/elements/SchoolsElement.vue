@@ -98,7 +98,7 @@ const availableApprentice = computed(() => {
 <style scoped>
 /* Conteneur principal sombre pour le contraste */
 .academy-wrapper {
-  padding: 24px;
+  padding: 5px;
   background: #0f172a; /* Bleu nuit profond */
   border-radius: 20px;
   color: #f8fafc;
@@ -163,7 +163,7 @@ const availableApprentice = computed(() => {
 }
 
 .academy-table td {
-  padding: 16px;
+  padding: 5px;
   border-bottom: 1px solid #334155;
   text-align: center;
 }
@@ -172,7 +172,6 @@ const availableApprentice = computed(() => {
 
 /* Éléments internes */
 .school-name {
-  font-weight: 700;
   color: #f8fafc;
 }
 

@@ -7,8 +7,8 @@
       @click="builderStore.build(props.id)"
     >
       <span class="btn-label">Améliorer</span>
-      <span class="btn-target">{{ building?.name }}</span>
-      <span class="btn-level">Niv. {{ building?.level }}</span>
+      <span class="btn-target">{{ building?building.name : 'undefined' }}</span>
+      <span class="btn-level">Niv. {{ building? building.level + 1 : null }}</span>
     </button>
 
     <button
@@ -16,7 +16,7 @@
       class="btn completed"
       disabled
     >
-      <span class="btn-label">{{ building?.name }}</span>
+      <span class="btn-label">{{ building?building.name : 'undefined' }}</span>
       <span class="btn-status">Niveau Maximum</span>
     </button>
 
@@ -27,7 +27,7 @@
       @click="builderStore.build(props.id)"
     >
       <span class="btn-label">Construire</span>
-      <span class="btn-target">{{ building?.name }}</span>
+      <span class="btn-target">{{ building?building.name : 'undefined' }}</span>
     </button>
   </div>
 </template>
@@ -92,6 +92,7 @@ const buildingCompleted=computed(()=>building.value!.level  >= building.value!.l
   font-size: 0.8rem;
   opacity: 0.8;
   font-weight: 500;
+  color: #0f172a;
 }
 
 /* --- VARIANTES D'ÉTATS --- */

@@ -13,6 +13,7 @@ import type {
   IncrementalRessources,
 } from '@/types/ressources'
 import type { BuildingId } from '@/data/buildings.data'
+import { unlocks } from '@/data/unlocks.data'
 
 export const useWizardStore = defineStore('wizard', () => {
   const buildingsStore = useBuildingsStore()
@@ -27,10 +28,10 @@ export const useWizardStore = defineStore('wizard', () => {
     coins:0,
     stone: 0,
     wood:0,
-    manamax: 10000,
-    watermax: 10000,
-    woodmax:100,
-    stonemax: 50000,
+    manamax: 100,
+    watermax: 10,
+    woodmax:50,
+    stonemax: 50,
     coinsmax:1000,
     prodcoins:0,
     prodwood:0,
@@ -38,7 +39,7 @@ export const useWizardStore = defineStore('wizard', () => {
     prodwater: 0,
     prodstone: 0,
     xpByApprentice:1,
-    numberOfApprentice:10,
+    numberOfApprentice:0,
   })
     const baseMultipliers = ref<BaseMultipliers>({
     manualmana: 0,
@@ -222,6 +223,7 @@ console.log("ressource de wizard definie")
     if (!(name in ressources.value)) {
       console.log(`addBonus function error: ressource ${name} not found`)
     }
+    
     const maxRessourceName=`${name}max`
     if(ressources.value[name as keyof typeof ressources.value] + value > ressources.value[maxRessourceName as keyof typeof ressources.value]){
       ressources.value[name as keyof typeof ressources.value] = ressources.value[maxRessourceName as keyof typeof ressources.value]

@@ -149,7 +149,6 @@ export const useSaveStore = defineStore('UseSave', () => {
       uncorruptSave = false
     }
 
-
     saveBuffs = useLocalStorage<Buff[]>('buffs', [], { writeDefaults: true })
     const buffKey = await getHash(JSON.stringify(saveBuffs.value))
     if (buffKey !== keys.value.buffKey) {
@@ -189,7 +188,6 @@ export const useSaveStore = defineStore('UseSave', () => {
     }
 
     if (uncorruptSave) {
-      appStore.setModal(CheatModal)
       console.log('aucune triche détécté')
     } else {
       appStore.setModal(CheatModal)
@@ -244,6 +242,7 @@ export const useSaveStore = defineStore('UseSave', () => {
     )
     saveBuildings = useLocalStorage<SaveBuildings>('buildings', [], { writeDefaults: true })
     saveUnlocks = useLocalStorage<SaveUnlocks>('unlocks', [], { writeDefaults: true })
+    appStore.app.init = true
   }
   async function reset() {
     boucle.stopBoucle()
@@ -258,6 +257,7 @@ export const useSaveStore = defineStore('UseSave', () => {
     wizardStore.reset()
     unlockStore.reset()
     schoolsStore.reset()
+    appStore.reset()
     await initSave()
     boucle.lauchBoucle()
   }

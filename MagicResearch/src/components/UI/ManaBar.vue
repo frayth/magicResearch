@@ -88,7 +88,7 @@ const wizardStore = useWizardStore();
   background-size: 200% 100%;
   border-radius: 8px;
   position: relative;
-  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width 0.1s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 0 15px rgba(139, 92, 246, 0.4); /* Glow magique */
 }
 

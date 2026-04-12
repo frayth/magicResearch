@@ -16,6 +16,7 @@ export const useBuilderStore = defineStore('builder', () => {
       console.error('Building not found')
       return
     }
+    console.log("building", building)
     if (!removeRessources(building.cost)) return
     if(!wizardStore.wizardHaveBuilding(name)){
       wizardStore.addBuilding(building)

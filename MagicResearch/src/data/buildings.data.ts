@@ -17,7 +17,7 @@ import type { Building } from "@/types/ressources"
           level:0,
           cost:{
             stone:{minValue:15,maxValue:25000},
-            water:{minValue:2,maxValue:9000}
+            water:{minValue:2,maxValue:6000}
           }
         }
       ]
@@ -66,8 +66,7 @@ import type { Building } from "@/types/ressources"
           manamax:100
         }
       }
-    },
-        {
+    },{
       name:'Entrepot',
       id:'entrepot',
       levelMax:20,
@@ -83,7 +82,49 @@ import type { Building } from "@/types/ressources"
       }],
       effects:{
         ressources:{
-          stonemax:400
+          stonemax:400,
+          woodmax:400
+        }
+      }
+    },
+    {
+      name:'Réservoir d\'eau',
+      id:'waterTank',
+      levelMax:20,
+      level:0,
+      easings:'expo',
+      cost:[{
+        level:0,
+        cost:{
+
+          coins:{minValue:350,maxValue:500000},
+          stone:{minValue:200,maxValue:20000},
+          wood:{minValue:300,maxValue:10000}
+        }
+      }],
+      effects:{
+        ressources:{
+          watermax:400
+        }
+      }
+    },{
+      name:'Scierie',
+      id:'lumberYard',
+      levelMax:20,
+      level:0,
+      easings:'expo',
+      cost:[{
+        level:0,
+        cost:{
+
+          mana:{minValue:200,maxValue:500000},
+          stone:{minValue:10,maxValue:20000},
+          wood:{minValue:25,maxValue:10000}
+        }
+      }],
+      effects:{
+        ressources:{
+          prodwood:1
         }
       }
     }

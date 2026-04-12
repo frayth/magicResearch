@@ -157,3 +157,13 @@ export interface BaseMultipliers extends BaseProduction {
 export type IncrementalRessources = "mana" | "water" | "stone" | "coins" | "wood"
 
 export type ModalComponent = typeof Cheat
+
+export interface StoryLine {
+  id:string
+  name:string
+  effects:() => void
+  trigger:() => boolean
+  order:number
+  completed:boolean
+  inProgress:boolean
+}

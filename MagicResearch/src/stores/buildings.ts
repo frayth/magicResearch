@@ -4,7 +4,6 @@ import { useWizardStore } from './wizard';
 import type {Building, BuildingWizard, IncrementalRessources, Ressources, RessourcesKey} from '../types/ressources'
 import{buildings as buildingsData, type BuildingId} from '../data/buildings.data'
 import { useValueByLevel } from '../composable/UseValueByLevel'
-import {ressourcesMAp} from '../data/RessourcesExp.data'
 export const useBuildingsStore = defineStore('buildings', () => {
   const wizardStore=useWizardStore();
 
@@ -28,7 +27,7 @@ export const useBuildingsStore = defineStore('buildings', () => {
     },{} as { [key: string]: {minValue: number; maxValue: number} })
 
     const currentLevel:Record<RessourcesKey,number> = Object.entries(costCurrentLevel).reduce((total,[ressource,quantity])=>{
-      total[ressource as RessourcesKey ]=useValueByLevel({level:level,startValue:quantity.minValue,endValue:quantity.maxValue,maxLevel:building.levelMax,easing:building.easings,minLevel:0}).value.value
+      total[ressource as RessourcesKey ]=Math.floor(useValueByLevel({level:level,startValue:quantity.minValue,endValue:quantity.maxValue,maxLevel:building.levelMax,easing:building.easings,minLevel:0}).value.value)
       return total
       },{} as Record<RessourcesKey,number>)
 
