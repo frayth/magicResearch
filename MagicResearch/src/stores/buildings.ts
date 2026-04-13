@@ -1,10 +1,9 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { useWizardStore } from './wizard';
-import type {Building, BuildingWizard, IncrementalRessources} from '../types/ressources'
+import type {Building, BuildingWizard, IncrementalRessources, Ressources, RessourcesKey} from '../types/ressources'
 import{buildings as buildingsData, type BuildingId} from '../data/buildings.data'
 import { useValueByLevel } from '../composable/UseValueByLevel'
-import {ressourcesMAp} from '../data/RessourcesExp.data'
 export const useBuildingsStore = defineStore('buildings', () => {
   const wizardStore=useWizardStore();
 
@@ -15,28 +14,25 @@ export const useBuildingsStore = defineStore('buildings', () => {
       console.error("Building not found")
       return null
     }
-    const exponentialProduction=building.exponentialProduction
-    const costCurrentLevel=building.cost.filter(cost=>cost.level<=level).pop()?.cost
-    const costNextLevel=building.cost.filter(cost=>cost.level<=level+1).pop()?.cost
-    if(!costCurrentLevel || !costNextLevel){
-      console.error("Cost not found")
-      return null
-    }
-    const currentLevel = Object.entries(costNextLevel).reduce((total,[ressource,quantity])=>{
-      const dataRessource=ressourcesMAp[ressource as IncrementalRessources]
-      console.log(level,ressource,quantity)
-      total[ressource]=useValueByLevel({level:level,startValue:quantity,endValue:dataRessource.endValue,maxLevel:dataRessource.maxLevel,easing:dataRessource.easing}).value.value
+    const costCurrentLevel=building.cost.filter(cost=>cost.level<=level).map(cost=>cost.cost).reduce((total,cost)=>{
+      Object.entries(cost).forEach(([ressource,quantity])=>{
+        if(total[ressource]){
+          total[ressource].minValue+=quantity.minValue
+          total[ressource].maxValue+=quantity.maxValue
+        }else{
+          total[ressource]={minValue:quantity.minValue,maxValue:quantity.maxValue}
+        }
+      })
       return total
-      },{} as {[key:string]:number})
-    const nextLevel = Object.entries(costNextLevel).reduce((total,[ressource,quantity])=>{
-      const dataRessource=ressourcesMAp[ressource as IncrementalRessources]
-      total[ressource]=useValueByLevel({level:level+1,startValue:quantity,endValue:dataRessource.endValue,maxLevel:dataRessource.maxLevel,easing:dataRessource.easing}).value.value
+    },{} as { [key: string]: {minValue: number; maxValue: number} })
+
+    const currentLevel:Record<RessourcesKey,number> = Object.entries(costCurrentLevel).reduce((total,[ressource,quantity])=>{
+      total[ressource as RessourcesKey ]=Math.floor(useValueByLevel({level:level,startValue:quantity.minValue,endValue:quantity.maxValue,maxLevel:building.levelMax,easing:building.easings,minLevel:0}).value.value)
       return total
-      },{} as {[key:string]:number})
+      },{} as Record<RessourcesKey,number>)
 
     const effects=building.effects
-    const bonus=building.bonus
-    return {cost:{currentLevel:currentLevel,nextLevel:nextLevel},bonus,level:level + 1,id,name:building.name,exponentialProduction,effects}
+    return {cost:currentLevel,level:level,id,name:building.name,effects,levelMax:building.levelMax}
   }
 
   async function init(){

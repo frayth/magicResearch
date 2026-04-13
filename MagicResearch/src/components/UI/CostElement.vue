@@ -30,7 +30,7 @@ const wizardStore=useWizardStore();
 const wizardHaveBuilding=computed(()=>wizardStore.wizardHaveBuilding(props.id));
 const building=computed(()=>buildingStore.getBuilding(props.id,wizardHaveBuilding.value? wizardHaveBuilding.value.level : 0))
 const cost=computed(()=>{
-  return building.value!.cost.currentLevel
+  return building.value!.cost
 })
 function ressourceIsEnought(key:string,value:number | undefined){
   const ressource=wizardStore.formatedRessources[key as keyof typeof wizardStore.formatedRessources]

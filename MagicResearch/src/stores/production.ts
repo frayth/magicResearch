@@ -9,11 +9,6 @@ export const useProductionStore = defineStore('production', () => {
   const boucleManagerStore = useBoucleManagerStore()
   const mathStore = useMathStore()
   const multipliers = wizardStore.multipliers
-  function addElement(name: 'mana' | 'water' |"coins") {
-    const displayedName = `manual${name}`
-    wizardStore.ressources[name] += 1 *  mathStore.transformPercentage(multipliers[displayedName as keyof typeof multipliers])
-    CheckLimit()
-  }
   function CheckLimit() {
     if (
       wizardStore.ressources.mana &&
@@ -38,6 +33,12 @@ export const useProductionStore = defineStore('production', () => {
       wizardStore.ressources.stone > wizardStore.ressources.stonemax
     ) {
       wizardStore.ressources.stone = wizardStore.ressources.stonemax
+    }
+        if (
+      wizardStore.ressources.wood  &&
+      wizardStore.ressources.wood > wizardStore.ressources.woodmax
+    ) {
+      wizardStore.ressources.wood = wizardStore.ressources.woodmax
     }
   }
   function updateProduction() {
@@ -72,7 +73,7 @@ export const useProductionStore = defineStore('production', () => {
         //console.log("key ",key)
         //console.log("value ",value)
         if (key in production) {
-         // console.log("key found",key)
+          //console.log("key found",key)
           const buildingBuff = wizardStore.buffs
             .map((buff) => {
               if (buff.effects.buildings) {
@@ -83,7 +84,7 @@ export const useProductionStore = defineStore('production', () => {
             })
             .reduce((a, b) => (a ?? 0) + (b ?? 0), 0)
           production[key as keyof typeof production] +=
-            value * building.level * mathStore.transformPercentage(buildingBuff)
+            value * (building.level+1) * mathStore.transformPercentage(buildingBuff)
         }
       })
       Object.entries(building.effects.multipliers ?? {}).forEach(([key, value]) => {
@@ -101,7 +102,7 @@ export const useProductionStore = defineStore('production', () => {
             })
             .reduce((a, b) => (a ?? 0) + (b ?? 0), 0)
           multipliers[key as keyof typeof multipliers] +=
-            value * building.level * mathStore.transformPercentage(buildingBuff)
+            value * (building.level+1) * mathStore.transformPercentage(buildingBuff)
         }
       })
     })
@@ -139,7 +140,7 @@ export const useProductionStore = defineStore('production', () => {
   }
   function mergeRessources(){
     for( const [key, value] of Object.entries(wizardStore.ressources)) {
-      const incrementalRessources=["mana","water","stone","coins"]
+      const incrementalRessources=["mana","water","stone","coins","wood"]
       if(incrementalRessources.includes(key)){
         switch(key){
           case "mana":wizardStore.ressources.mana+=wizardStore.production.prodmana* mathStore.transformPercentage(wizardStore.multipliers.prodmana) / mathStore.RatioTimer()
@@ -148,7 +149,9 @@ export const useProductionStore = defineStore('production', () => {
           break;
           case "stone":wizardStore.ressources.stone+=wizardStore.production.prodstone* mathStore.transformPercentage(wizardStore.multipliers.prodstone) / mathStore.RatioTimer()
           break;
-          case "coins":wizardStore.ressources.stone+=wizardStore.production.prodstone* mathStore.transformPercentage(wizardStore.multipliers.prodstone) / mathStore.RatioTimer()
+          case "coins":wizardStore.ressources.coins+=wizardStore.production.prodcoins* mathStore.transformPercentage(wizardStore.multipliers.prodcoins) / mathStore.RatioTimer()
+          break;
+          case "wood":wizardStore.ressources.wood+=wizardStore.production.prodwood* mathStore.transformPercentage(wizardStore.multipliers.prodwood) / mathStore.RatioTimer()
           break;
         }
       }else{
@@ -157,5 +160,5 @@ export const useProductionStore = defineStore('production', () => {
     }
     CheckLimit()
   }
-  return { init, addElement, updateProduction }
+  return { init, updateProduction }
 })

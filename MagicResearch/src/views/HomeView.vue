@@ -8,12 +8,15 @@ import MagicElement from '@/components/elements/magicElement.vue'
 import RichText from '@/components/UI/RichText.vue'
 import BuildingElement from '@/components/elements/BuildingElement.vue'
 import ManaBar from '@/components/UI/ManaBar.vue'
+import { useSaveStore } from '@/stores/save'
 const wizardStore = useWizardStore()
+const saveStore = useSaveStore()
 
 </script>
 
 <template>
   <main>
+    <button @click="saveStore.reset()">Reset</button>
     <ManaBar />
     <ProductionElements />
     <BuildingElement />
@@ -26,15 +29,7 @@ const wizardStore = useWizardStore()
       </ul>
     </div>
     <div>
-      <p>Mana : {{ wizardStore.formatedRessources.mana }}</p>
-      <p>Water : {{ wizardStore.formatedRessources.water }}</p>
-      <p>Stone : {{ wizardStore.formatedRessources.stone }}</p>
-      <p>Manamax : {{ wizardStore.formatedRessources.manamax }}</p>
-      <p>Watermax : {{ wizardStore.formatedRessources.watermax }}</p>
-      <p>Stonemax : {{ wizardStore.formatedRessources.stonemax }}</p>
-      <p>Prodmana : {{ wizardStore.ressources.prodmana }}</p>
-      <p>Prodwater : {{ wizardStore.ressources.prodwater }}</p>
-      <p>Prodstone : {{ wizardStore.ressources.prodstone }}</p>
+
     </div>
     <SchoolsElement />
     <MagicElement />

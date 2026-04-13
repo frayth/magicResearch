@@ -1,11 +1,12 @@
 import type { Building } from "@/types/ressources"
-
-  export const buildings=[
+//export type EasingType = 'linear' | 'quad' | 'cubic' | 'quart' | 'expo' | 'sine';
+  export const buildingsData=[
     {
       name:"Puit de mana",
       id:"puitDeMana",
-      exponentialProduction:5,
-      bonus:0,
+      levelMax:100,
+      level:0,
+      easings:'expo',
       effects:{
         ressources:{
           prodmana:0.5
@@ -15,25 +16,18 @@ import type { Building } from "@/types/ressources"
         {
           level:0,
           cost:{
-            stone:500,
-            water:2
+            stone:{minValue:15,maxValue:25000},
+            water:{minValue:2,maxValue:6000}
           }
-        }
-        ,{
-          // level:10,
-          // cost:{
-          //   stone:150,
-          //   water:150,
-          // }
         }
       ]
     },
     {
       name:"Cascade",
       id:"cascade",
-      exponentialCost:20,
-      exponentialProduction:5,
-      bonus:0,
+      levelMax:10,
+      level:0,
+      easings:'expo',
       effects:{
         ressources:{
           prodwater:0.5
@@ -48,8 +42,8 @@ import type { Building } from "@/types/ressources"
         {
           level:0,
           cost:{
-            water:10,
-            mana:10
+            water:{maxValue:100,minValue:10},
+            mana:{maxValue:100,minValue:10}
           }
         }
       ]
@@ -57,22 +51,85 @@ import type { Building } from "@/types/ressources"
     {
       name:'Eclat de Mana',
       id:'eclatdemana',
+      levelMax:50,
+      level:0,
+      easings:'expo',
       cost:[{
         level:0,
         cost:{
 
-          coins:100
+          coins:{minValue:100,maxValue:500000}
         }
       }],
-      exponentialProduction:5,
-      bonus:0,
       effects:{
         ressources:{
           manamax:100
         }
       }
+    },{
+      name:'Entrepot',
+      id:'entrepot',
+      levelMax:20,
+      level:0,
+      easings:'expo',
+      cost:[{
+        level:0,
+        cost:{
+
+          coins:{minValue:200,maxValue:500000},
+          stone:{minValue:30,maxValue:20000}
+        }
+      }],
+      effects:{
+        ressources:{
+          stonemax:400,
+          woodmax:400
+        }
+      }
+    },
+    {
+      name:'Réservoir d\'eau',
+      id:'waterTank',
+      levelMax:20,
+      level:0,
+      easings:'expo',
+      cost:[{
+        level:0,
+        cost:{
+
+          coins:{minValue:350,maxValue:500000},
+          stone:{minValue:200,maxValue:20000},
+          wood:{minValue:300,maxValue:10000}
+        }
+      }],
+      effects:{
+        ressources:{
+          watermax:400
+        }
+      }
+    },{
+      name:'Scierie',
+      id:'lumberYard',
+      levelMax:20,
+      level:0,
+      easings:'expo',
+      cost:[{
+        level:0,
+        cost:{
+
+          mana:{minValue:200,maxValue:500000},
+          stone:{minValue:10,maxValue:20000},
+          wood:{minValue:25,maxValue:10000}
+        }
+      }],
+      effects:{
+        ressources:{
+          prodwood:1
+        }
+      }
     }
   ] as const
 
-export type BuildingId = typeof buildings[number]['id']
+export type BuildingId = (typeof buildingsData)[number]['id']
 
+export const buildings = buildingsData.map(b => ({...b})) as unknown as Building[]
