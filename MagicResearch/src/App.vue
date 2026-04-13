@@ -7,6 +7,7 @@ import { useBuildingsStore } from './stores/buildings'
 import { useProductionStore } from './stores/production'
 import { useUnlockStore } from './stores/unlock'
 import { useWizardStore } from './stores/wizard'
+import { useStoryLineStore } from './stores/storyLine'
 import { useSchoolsStore } from './stores/schools'
 import { useSaveStore } from './stores/save'
 import ModalElement from './components/Modals/modalElement.vue'
@@ -19,6 +20,7 @@ const unlockStore = useUnlockStore()
 const wizardStore = useWizardStore()
 const schoolsStore = useSchoolsStore()
 const saveStore = useSaveStore()
+const storyLineStore = useStoryLineStore()
 watch(
   () => appStore.ready,
   async () => {
@@ -37,6 +39,7 @@ watch(
 Promise.all([
   wizardStore.init(),
   appStore.init(),
+  storyLineStore.init(),
   builderStore.init(),
   buildingsStore.init(),
   productionStore.init(),

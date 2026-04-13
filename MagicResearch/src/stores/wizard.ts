@@ -11,6 +11,7 @@ import type {
   Buff,
   Spell,
   IncrementalRessources,
+  storyProgress,
 } from '@/types/ressources'
 import type { BuildingId } from '@/data/buildings.data'
 import { unlocks } from '@/data/unlocks.data'
@@ -20,6 +21,7 @@ export const useWizardStore = defineStore('wizard', () => {
   const saveStore=useSaveStore()
   const ressourcesNeedToBeUpdated = ref(true)
   const buffs = ref<Buff[]>([])
+  const storyProgress=ref<storyProgress>({progress:0,completed:false})
   type RessourcesKeys = keyof typeof baseProduction.value
   type MultipliersKeys = keyof typeof multipliers.value
   const baseProduction = ref<BaseProduction>({
@@ -223,7 +225,7 @@ console.log("ressource de wizard definie")
     if (!(name in ressources.value)) {
       console.log(`addBonus function error: ressource ${name} not found`)
     }
-    
+
     const maxRessourceName=`${name}max`
     if(ressources.value[name as keyof typeof ressources.value] + value > ressources.value[maxRessourceName as keyof typeof ressources.value]){
       ressources.value[name as keyof typeof ressources.value] = ressources.value[maxRessourceName as keyof typeof ressources.value]
@@ -276,6 +278,7 @@ console.log("ressource de wizard definie")
     production,
     castSpell,
     updateWizard,
-    reset
+    reset,
+    storyProgress
   }
 })

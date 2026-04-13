@@ -1,7 +1,7 @@
-import { ref, computed, markRaw } from 'vue'
+import { ref, computed, markRaw, shallowRef } from 'vue'
 import { defineStore } from 'pinia'
 import { useLocalStorage } from '@vueuse/core'
-import type { ModalComponent } from '@/types/ressources'
+import type { ModalComponent, StoryLine, StoryLineData } from '@/types/ressources'
 import type { Component } from 'vue'
 export const useAppStore = defineStore('app', () => {
   const loading = ref(0)
@@ -9,6 +9,7 @@ export const useAppStore = defineStore('app', () => {
   const ready = ref(false)
   const messagesModal = ref<Component[]>([])
   const modalIsShow = computed(() => messagesModal.value.length > 0)
+  const storyLineModal = shallowRef<{show:boolean,story:StoryLine,storyData:StoryLineData}| null>(null)
   const app = useLocalStorage('app', {
     version: '1.0.0',
     init: false,
@@ -39,5 +40,6 @@ export const useAppStore = defineStore('app', () => {
     setModal,
     popMessageModal,
     reset,
+    storyLineModal,
   }
 })

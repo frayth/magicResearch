@@ -34,6 +34,12 @@ export const useProductionStore = defineStore('production', () => {
     ) {
       wizardStore.ressources.stone = wizardStore.ressources.stonemax
     }
+        if (
+      wizardStore.ressources.wood  &&
+      wizardStore.ressources.wood > wizardStore.ressources.woodmax
+    ) {
+      wizardStore.ressources.wood = wizardStore.ressources.woodmax
+    }
   }
   function updateProduction() {
     if (wizardStore.ressourcesNeedToBeUpdated) {

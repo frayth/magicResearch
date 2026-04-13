@@ -1,6 +1,6 @@
 <template>
   <button
-    @click="wizardStore.addRessources(props.name,1)"
+    @click="wizardStore.addRessources(props.name,50)"
     ref="buttonProd"
     class="prod-btn"
   >

@@ -63,7 +63,7 @@ const unlocksData = [
     name: 'Forêt',
     conditions: {
       ressources: [['coins', 100]] as [RessourcesKey, number][],
-      buildings: [{name:'entrepot', level:1}] as { name: BuildingId; level: number }[],
+      buildings: [{name:'entrepot', level:0}] as { name: BuildingId; level: number }[],
       unlocks: [],
     },
     locked: false,

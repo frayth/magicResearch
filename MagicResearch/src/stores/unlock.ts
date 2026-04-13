@@ -29,6 +29,7 @@ export const useUnlockStore = defineStore('unlock', () => {
     }
     return false
   }
+
   function unlockConditionIsMet(unlock: Unlock): boolean {
     return (
       unlock.conditions.ressources?.every(([ressource, quantity]) =>

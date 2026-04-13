@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { useLocalStorage, type RemovableRef } from '@vueuse/core'
 import { useWizardStore } from '@/stores/wizard'
+import { useStoryLineStore } from '@/stores/storyLine'
 import { useBoucleManagerStore } from './boucleManager'
 import { defaultRessources, defaultMultipliersREssources } from '@/data/defaultValue.data'
 import { useAppStore } from './app'
@@ -11,6 +12,7 @@ import type {
   SaveBuildings,
   SaveRessources,
   SaveSchools,
+  SaveStoryLine,
   SaveUnlocks,
 } from '@/types/ressources'
 import { useSchoolsStore } from './schools'
@@ -23,6 +25,7 @@ export const useSaveStore = defineStore('UseSave', () => {
   const buildingsStore = useBuildingsStore()
   const unlockStore = useUnlockStore()
   const schoolsStore = useSchoolsStore()
+  const storyLineStore = useStoryLineStore()
   const boucle = useBoucleManagerStore()
   console.log('save.ts qui essais de sauvegarder les ressources')
   let saveRessources: RemovableRef<SaveRessources> | null = null
@@ -30,12 +33,14 @@ export const useSaveStore = defineStore('UseSave', () => {
   let saveUnlocks: RemovableRef<SaveUnlocks> | null = null
   let saveSchool: RemovableRef<SaveSchools> | null = null
   let saveBuffs: RemovableRef<Buff[]> | null = null
+  let saveStoryLine: RemovableRef<SaveStoryLine> | null = null
   let keys: RemovableRef<{
     ressourcesKey: string
     schoolKey: string
     buildingKey: string
     unlockKey: string
     buffKey: string
+    storyLineKey: string
   }> | null = null
 
   async function saveData() {
@@ -45,7 +50,8 @@ export const useSaveStore = defineStore('UseSave', () => {
       saveUnlocks === null ||
       saveBuffs === null ||
       saveSchool === null ||
-      keys === null
+      keys === null ||
+      saveStoryLine === null
     ) {
       console.error('error dans le systeme de sauvegarde')
       return
@@ -54,6 +60,7 @@ export const useSaveStore = defineStore('UseSave', () => {
       id: el.id,
       level: el.level,
     }))
+    const currentStoryLine = { progress: wizardStore.storyProgress.progress || 0 , completed: wizardStore.storyProgress.completed }
     const currentUnlocks = unlockStore.unlocks
       .filter((el) => el.unlock)
       .map((el) => ({
@@ -80,6 +87,7 @@ export const useSaveStore = defineStore('UseSave', () => {
     const buildingKey = await getHash(JSON.stringify(currentBuildings))
     const unlockKey = await getHash(JSON.stringify(currentUnlocks))
     const buffKey = await getHash(JSON.stringify(wizardStore.buffs))
+    const storyLineKey = await getHash(JSON.stringify(currentStoryLine))
 
     saveRessources.value = {
       ressources: wizardStore.ressources,
@@ -95,12 +103,15 @@ export const useSaveStore = defineStore('UseSave', () => {
     saveBuildings.value = currentBuildings
     saveUnlocks.value = currentUnlocks
     saveBuffs.value = wizardStore.buffs
+    saveStoryLine.value = currentStoryLine
+
     keys.value = {
       ressourcesKey,
       schoolKey,
       buildingKey,
       unlockKey,
       buffKey,
+      storyLineKey,
     }
   }
 
@@ -119,6 +130,7 @@ export const useSaveStore = defineStore('UseSave', () => {
         buildingKey: '',
         unlockKey: '',
         buffKey: '',
+        storyLineKey: '',
       },
       { writeDefaults: true },
     )
@@ -179,6 +191,14 @@ export const useSaveStore = defineStore('UseSave', () => {
       uncorruptSave = false
     }
 
+    saveStoryLine = useLocalStorage<SaveStoryLine>('storyLine', { progress: 0 , completed: false }, { writeDefaults: true })
+
+    const storyLineKey = await getHash(JSON.stringify(saveStoryLine.value))
+    if (storyLineKey !== keys.value.storyLineKey) {
+      console.log('storyLine key is not correct')
+      uncorruptSave = false
+    }
+
     saveUnlocks = useLocalStorage<SaveUnlocks>('unlocks', [], { writeDefaults: true })
 
     const unlocksKey = await getHash(JSON.stringify(saveUnlocks.value))
@@ -200,6 +220,8 @@ export const useSaveStore = defineStore('UseSave', () => {
     wizardStore.buffs = saveBuffs.value
     unlockStore.setUnlock(saveUnlocks.value)
     schoolsStore.setSchools(saveSchool.value)
+    wizardStore.storyProgress = saveStoryLine.value
+    storyLineStore.initStoryline()
     saveBuildings.value.forEach((building) => {
       const dataBuilding = buildingsStore.getBuilding(building.id, building.level)
       if (dataBuilding) {
@@ -216,10 +238,11 @@ export const useSaveStore = defineStore('UseSave', () => {
         buildingKey: '',
         unlockKey: '',
         buffKey: '',
+        storyLineKey: '',
       },
       { writeDefaults: true },
     )
-
+    saveStoryLine = useLocalStorage<SaveStoryLine>('storyLine', { progress: 0, completed: false }, { writeDefaults: true })
     saveSchool = useLocalStorage<SaveSchools>(
       'schools',
       schoolsStore.schools.map((el) => ({
@@ -242,6 +265,7 @@ export const useSaveStore = defineStore('UseSave', () => {
     )
     saveBuildings = useLocalStorage<SaveBuildings>('buildings', [], { writeDefaults: true })
     saveUnlocks = useLocalStorage<SaveUnlocks>('unlocks', [], { writeDefaults: true })
+    storyLineStore.initStoryline()
     appStore.app.init = true
   }
   async function reset() {
@@ -254,9 +278,11 @@ export const useSaveStore = defineStore('UseSave', () => {
     localStorage.removeItem('schools')
     localStorage.removeItem('buffs')
     localStorage.removeItem('keys')
+    localStorage.removeItem('storyLine')
     wizardStore.reset()
     unlockStore.reset()
     schoolsStore.reset()
+    storyLineStore.reset()
     appStore.reset()
     await initSave()
     boucle.lauchBoucle()

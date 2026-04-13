@@ -15,10 +15,13 @@
         </div>
       </div>
   </div>
+
 </template>
 
 <script setup lang="ts">
+import { useStoryLineStore } from '@/stores/storyLine'
 
+const storyLineStore = useStoryLineStore()
 </script>
 
 <style scoped>
