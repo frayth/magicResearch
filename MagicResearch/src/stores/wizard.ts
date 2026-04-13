@@ -14,7 +14,7 @@ import type {
   storyProgress,
 } from '@/types/ressources'
 import type { BuildingId } from '@/data/buildings.data'
-import { unlocks } from '@/data/unlocks.data'
+
 
 export const useWizardStore = defineStore('wizard', () => {
   const buildingsStore = useBuildingsStore()

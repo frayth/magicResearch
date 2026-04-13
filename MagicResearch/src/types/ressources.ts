@@ -1,7 +1,7 @@
 import Cheat from '@/components/Modals/elements/cheatModal.vue'
 import type { BuildingId } from '../data/buildings.data'
 export type Schools = 'illusion' | 'conjuration' | 'enchantement'
-import type { UnlockName } from '../data/unlocks.data'
+import type { UnlocksNames } from '../data/unlocks.data'
 import type { EasingType } from '@/composable/UseValueByLevel'
 import type { ComputedRef, WatchHandle } from 'vue'
 export interface Spell {
@@ -16,14 +16,8 @@ export interface Spell {
   effect: () => void
 }
 export interface Unlock {
-  name: UnlockName
-  conditions: {
-    ressources: ReadonlyArray<[RessourcesKey, number]>
-    buildings: ReadonlyArray<{ name: BuildingId; level: number }>
-    unlocks: ReadonlyArray<UnlockName>
-  }
-  unlock: boolean
-  locked: boolean
+  name: UnlocksNames
+  conditions: ComputedRef<boolean>
 }
 
 export interface School {
@@ -123,7 +117,7 @@ export type SaveBuildings = {
 export type SaveSchools = Pick<School, 'name' | 'currentXp' | 'level' | 'numberOfapprentice'>[]
 
 export type SaveUnlocks = {
-  name: UnlockName
+  name: UnlocksNames
   unlock: boolean
 }[]
 
