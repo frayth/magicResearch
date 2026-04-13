@@ -18,6 +18,7 @@ import type {
 import { useSchoolsStore } from './schools'
 import { useBuildingsStore } from '@/stores/buildings'
 import { useUnlockStore } from './unlock'
+import type { UnlocksNames } from '@/data/unlocks.data'
 export type SaveName = 'ressources' | 'buildings' | 'unlocks' | 'schools' | 'buffs'
 export const useSaveStore = defineStore('UseSave', () => {
   const wizardStore = useWizardStore()
@@ -30,7 +31,7 @@ export const useSaveStore = defineStore('UseSave', () => {
   console.log('save.ts qui essais de sauvegarder les ressources')
   let saveRessources: RemovableRef<SaveRessources> | null = null
   let saveBuildings: RemovableRef<SaveBuildings> | null = null
-  let saveUnlocks: RemovableRef<SaveUnlocks> | null = null
+  let saveUnlocks: RemovableRef<UnlocksNames[]> | null = null
   let saveSchool: RemovableRef<SaveSchools> | null = null
   let saveBuffs: RemovableRef<Buff[]> | null = null
   let saveStoryLine: RemovableRef<SaveStoryLine> | null = null
@@ -61,12 +62,7 @@ export const useSaveStore = defineStore('UseSave', () => {
       level: el.level,
     }))
     const currentStoryLine = { progress: wizardStore.storyProgress.progress || 0 , completed: wizardStore.storyProgress.completed }
-    const currentUnlocks = unlockStore.unlocks
-      .filter((el) => el.unlock)
-      .map((el) => ({
-        name: el.name,
-        unlock: el.unlock,
-      }))
+    const currentUnlocks = unlockStore.unlocked
     const ressourcesKey = await getHash(
       JSON.stringify({
         ressources: wizardStore.ressources,
@@ -199,7 +195,7 @@ export const useSaveStore = defineStore('UseSave', () => {
       uncorruptSave = false
     }
 
-    saveUnlocks = useLocalStorage<SaveUnlocks>('unlocks', [], { writeDefaults: true })
+    saveUnlocks = useLocalStorage<UnlocksNames[]>('unlocks', [], { writeDefaults: true })
 
     const unlocksKey = await getHash(JSON.stringify(saveUnlocks.value))
     if (unlocksKey !== keys.value.unlockKey) {
@@ -218,7 +214,7 @@ export const useSaveStore = defineStore('UseSave', () => {
     wizardStore.baseProduction = saveRessources.value.baseProduction
     wizardStore.baseMultipliers = saveRessources.value.baseMultipliers
     wizardStore.buffs = saveBuffs.value
-    unlockStore.setUnlock(saveUnlocks.value)
+    unlockStore.unlocked = saveUnlocks.value
     schoolsStore.setSchools(saveSchool.value)
     wizardStore.storyProgress = saveStoryLine.value
     storyLineStore.initStoryline()
@@ -264,7 +260,7 @@ export const useSaveStore = defineStore('UseSave', () => {
       { writeDefaults: true },
     )
     saveBuildings = useLocalStorage<SaveBuildings>('buildings', [], { writeDefaults: true })
-    saveUnlocks = useLocalStorage<SaveUnlocks>('unlocks', [], { writeDefaults: true })
+    saveUnlocks = useLocalStorage<UnlocksNames[]>('unlocks', [], { writeDefaults: true })
     storyLineStore.initStoryline()
     appStore.app.init = true
   }
@@ -280,7 +276,7 @@ export const useSaveStore = defineStore('UseSave', () => {
     localStorage.removeItem('keys')
     localStorage.removeItem('storyLine')
     wizardStore.reset()
-    unlockStore.reset()
+    // unlockStore.reset()
     schoolsStore.reset()
     storyLineStore.reset()
     appStore.reset()
