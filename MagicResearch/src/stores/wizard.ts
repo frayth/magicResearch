@@ -41,7 +41,8 @@ export const useWizardStore = defineStore('wizard', () => {
     prodwater: 0,
     prodstone: 0,
     xpByApprentice:1,
-    numberOfApprentice:0,
+    apprenticeCapacity:1,
+    numberOfApprentice:1,
   })
     const baseMultipliers = ref<BaseMultipliers>({
     manualmana: 0,
@@ -63,6 +64,7 @@ export const useWizardStore = defineStore('wizard', () => {
     prodwater: 0,
     prodstone: 0,
     xpByApprentice:0,
+    apprenticeCapacity:1,
     numberOfApprentice:0,
   })
   const production = ref<BaseProduction>({
@@ -81,7 +83,8 @@ export const useWizardStore = defineStore('wizard', () => {
     prodwood:0,
     prodwater: 0,
     prodstone: 0,
-    numberOfApprentice:0,
+    numberOfApprentice:1,
+    apprenticeCapacity:1,
     xpByApprentice:1,
   })
 
@@ -102,6 +105,7 @@ export const useWizardStore = defineStore('wizard', () => {
     prodwater: 0,
     prodstone: 0,
     numberOfApprentice:0,
+    apprenticeCapacity:1,
     xpByApprentice:1,
 
   })
@@ -125,11 +129,12 @@ export const useWizardStore = defineStore('wizard', () => {
     prodwater: 0,
     prodstone: 0,
     numberOfApprentice:0,
+    apprenticeCapacity:1,
     xpByApprentice:0,
   })
 
   const buildings = ref<BuildingWizard[]>([])
-console.log("ressource de wizard definie")
+
   function wizardHaveBuilding(id: BuildingId) {
     return buildings.value.find((building) => building.id === id)
   }
@@ -209,7 +214,7 @@ console.log("ressource de wizard definie")
       console.error('Building not found')
       return
     }
-    console.log(currentBuilding.level)
+    //console.log(currentBuilding.level)
     const buildingStore = buildingsStore.getBuilding(id, currentBuilding.level + 1)
     if (!buildingStore) {
       console.error('Building not found')
@@ -223,7 +228,7 @@ console.log("ressource de wizard definie")
   }
   function addRessources(name: IncrementalRessources, value: number) {
     if (!(name in ressources.value)) {
-      console.log(`addBonus function error: ressource ${name} not found`)
+      console.error(`addBonus function error: ressource ${name} not found`)
     }
 
     const maxRessourceName=`${name}max`
@@ -257,6 +262,8 @@ console.log("ressource de wizard definie")
     buffs.value = []
     production.value = baseProduction.value
     ressourcesNeedToBeUpdated.value = true
+    storyProgress.value = { progress: 0, completed: false }
+
   }
   return {
     init,

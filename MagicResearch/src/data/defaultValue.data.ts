@@ -16,8 +16,9 @@ export const defaultRessources:BaseProduction={
   prodmana: 0,
   prodwater: 0,
   prodstone: 0,
-  xpByApprentice: 0,
-  numberOfApprentice: 0,
+  xpByApprentice: 1,
+  numberOfApprentice: 1,
+  apprenticeCapacity:1,
 }
 
 export const defaultMultipliersREssources:BaseMultipliers={
@@ -39,6 +40,7 @@ export const defaultMultipliersREssources:BaseMultipliers={
   prodmana: 0,
   prodwater: 0,
   prodstone: 0,
-  xpByApprentice: 0,
-  numberOfApprentice: 0,
+  xpByApprentice: 1,
+  numberOfApprentice: 1,
+  apprenticeCapacity:1,
 }

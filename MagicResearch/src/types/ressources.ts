@@ -4,6 +4,8 @@ export type Schools = 'illusion' | 'conjuration' | 'enchantement'
 import type { UnlocksNames } from '../data/unlocks.data'
 import type { EasingType } from '@/composable/UseValueByLevel'
 import type { ComputedRef, WatchHandle } from 'vue'
+import type { SchoolAction } from '@/data/schools.data'
+
 export interface Spell {
   name: string
   id: string
@@ -26,7 +28,7 @@ export interface School {
   baseXp: number
   currentXp: number
   exponentielXp: number
-  numberOfapprentice: number
+  numberOfapprentice: number,
   spells: Spell[]
 }
 
@@ -114,7 +116,13 @@ export type SaveBuildings = {
   level: number
 }[]
 
-export type SaveSchools = Pick<School, 'name' | 'currentXp' | 'level' | 'numberOfapprentice'>[]
+export type SaveSchools ={
+  schools:Pick<School, 'name' | 'currentXp' | 'level' | 'numberOfapprentice'>[],
+  actions: {
+    name:SchoolAction,
+    level:number,
+  }[]
+}
 
 export type SaveUnlocks = {
   name: UnlocksNames
@@ -143,6 +151,7 @@ export interface BaseProduction {
   prodstone: number
   xpByApprentice: number
   numberOfApprentice: number
+  apprenticeCapacity: number
 }
 
 export interface Ressources {
@@ -174,11 +183,13 @@ export type ModalComponent = typeof Cheat
 export interface StoryLine {
   id: string
   name: string
+  haveCost: boolean
   effects: () => void
   trigger: () => void
   order: number
   watchNextStory: () => WatchHandle
   completion: ComputedRef<boolean>
+  buttonLabel: string
 }
 
 export type storyProgress = {
@@ -186,9 +197,22 @@ export type storyProgress = {
   completed: boolean
 }
 
-
-
 export type StoryLineData = {
   id: string
   text: string[][]
+  ending: string[]
+  unlock: string
+}
+
+export type Action = {
+  name: string
+  id: string
+  text: string
+  easing: EasingType
+  cost: {
+    [k in RessourcesKey]?: { minValue: number; maxValue: number }
+  }
+  levelMax:number
+  description: string
+  effects: () => void
 }

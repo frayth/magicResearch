@@ -6,11 +6,11 @@ export function useConjurationSchoolSpells(){
   const schoolsStore=useSchoolsStore();
   function SpellIsCastable(spell:Spell){
     if(spell.level>schoolsStore.conjurationSchools.level){
-      console.log("spell level too high")
+      console.error("spell level too high")
       return false
     }
     if(!wizardStore.checkIfRessourceAreEnough({mana:spell.cost})){
-      console.log("not enough mana")
+      console.error("not enough mana")
       return false
     }
     return true

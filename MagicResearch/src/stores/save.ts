@@ -5,7 +5,10 @@ import { useStoryLineStore } from '@/stores/storyLine'
 import { useBoucleManagerStore } from './boucleManager'
 import { defaultRessources, defaultMultipliersREssources } from '@/data/defaultValue.data'
 import { useAppStore } from './app'
+import { saveCooldown } from '@/data/boucle.data'
+
 import CheatModal from '@/components/Modals/elements/cheatModal.vue'
+
 import { ref, toRaw } from 'vue'
 import type {
   Buff,
@@ -28,7 +31,11 @@ export const useSaveStore = defineStore('UseSave', () => {
   const schoolsStore = useSchoolsStore()
   const storyLineStore = useStoryLineStore()
   const boucle = useBoucleManagerStore()
-  console.log('save.ts qui essais de sauvegarder les ressources')
+  const coolDownSave = ref({
+    lastSave: 0,
+    cooldown: saveCooldown,
+  })
+  //console.log('save.ts qui essais de sauvegarder les ressources')
   let saveRessources: RemovableRef<SaveRessources> | null = null
   let saveBuildings: RemovableRef<SaveBuildings> | null = null
   let saveUnlocks: RemovableRef<UnlocksNames[]> | null = null
@@ -61,8 +68,24 @@ export const useSaveStore = defineStore('UseSave', () => {
       id: el.id,
       level: el.level,
     }))
-    const currentStoryLine = { progress: wizardStore.storyProgress.progress || 0 , completed: wizardStore.storyProgress.completed }
+    const buildingKey = await getHash(JSON.stringify(currentBuildings))
+    saveBuildings.value = currentBuildings
+    keys.value.buildingKey = buildingKey
+
+
+    const currentStoryLine = {
+      progress: wizardStore.storyProgress.progress || 0,
+      completed: wizardStore.storyProgress.completed,
+    }
+    const storyLineKey = await getHash(JSON.stringify(currentStoryLine))
+    saveStoryLine.value = currentStoryLine
+    keys.value.storyLineKey = storyLineKey
+
     const currentUnlocks = unlockStore.unlocked
+    const unlockKey = await getHash(JSON.stringify(currentUnlocks))
+    saveUnlocks.value = currentUnlocks
+    keys.value.unlockKey = unlockKey
+
     const ressourcesKey = await getHash(
       JSON.stringify({
         ressources: wizardStore.ressources,
@@ -70,45 +93,38 @@ export const useSaveStore = defineStore('UseSave', () => {
         baseMultipliers: wizardStore.baseMultipliers,
       }),
     )
+  saveRessources.value = {
+      ressources: wizardStore.ressources,
+      baseProduction: wizardStore.baseProduction,
+      baseMultipliers: wizardStore.baseMultipliers,
+    }
+    keys.value.ressourcesKey = ressourcesKey
+
     const schoolKey = await getHash(
-      JSON.stringify(
-        schoolsStore.schools.map((el) => ({
+      JSON.stringify({
+        schools: schoolsStore.schools.map((el) => ({
           name: el.name,
           currentXp: el.currentXp,
           level: el.level,
           numberOfapprentice: el.numberOfapprentice,
         })),
-      ),
+        actions: schoolsStore.actionsSchool,
+      }),
     )
-    const buildingKey = await getHash(JSON.stringify(currentBuildings))
-    const unlockKey = await getHash(JSON.stringify(currentUnlocks))
+    saveSchool.value = {
+      schools: schoolsStore.schools.map((el) => ({
+        name: el.name,
+        currentXp: el.currentXp,
+        level: el.level,
+        numberOfapprentice: el.numberOfapprentice,
+      })),
+      actions: schoolsStore.actionsSchool,
+    }
+    keys.value.schoolKey = schoolKey
+
     const buffKey = await getHash(JSON.stringify(wizardStore.buffs))
-    const storyLineKey = await getHash(JSON.stringify(currentStoryLine))
-
-    saveRessources.value = {
-      ressources: wizardStore.ressources,
-      baseProduction: wizardStore.baseProduction,
-      baseMultipliers: wizardStore.baseMultipliers,
-    }
-    saveSchool.value = schoolsStore.schools.map((el) => ({
-      name: el.name,
-      currentXp: el.currentXp,
-      level: el.level,
-      numberOfapprentice: el.numberOfapprentice,
-    }))
-    saveBuildings.value = currentBuildings
-    saveUnlocks.value = currentUnlocks
     saveBuffs.value = wizardStore.buffs
-    saveStoryLine.value = currentStoryLine
-
-    keys.value = {
-      ressourcesKey,
-      schoolKey,
-      buildingKey,
-      unlockKey,
-      buffKey,
-      storyLineKey,
-    }
+    keys.value.buffKey = buffKey
   }
 
   function internalSecret() {
@@ -117,7 +133,7 @@ export const useSaveStore = defineStore('UseSave', () => {
 
   async function loadSave() {
     let uncorruptSave = true
-    console.log('loadsave', localStorage.getItem('ressources'))
+    //console.log('loadsave', localStorage.getItem('ressources'))
     keys = useLocalStorage(
       'keys',
       {
@@ -133,24 +149,34 @@ export const useSaveStore = defineStore('UseSave', () => {
 
     saveSchool = useLocalStorage<SaveSchools>(
       'schools',
-      schoolsStore.schools.map((el) => ({
-        name: el.name,
-        currentXp: el.currentXp,
-        level: el.level,
-        numberOfapprentice: el.numberOfapprentice,
-      })),
-      { writeDefaults: true },
-    )
-
-    const schoolKey = await getHash(
-      JSON.stringify(
-        saveSchool.value.map((el) => ({
+      {
+        schools: schoolsStore.schools.map((el) => ({
           name: el.name,
           currentXp: el.currentXp,
           level: el.level,
           numberOfapprentice: el.numberOfapprentice,
         })),
-      ),
+        actions: schoolsStore.actionsSchool.map((el) => ({
+          name: el.name,
+          level: el.level,
+        })),
+      },
+      { writeDefaults: true },
+    )
+
+    const schoolKey = await getHash(
+      JSON.stringify({
+        schools: schoolsStore.schools.map((el) => ({
+          name: el.name,
+          currentXp: el.currentXp,
+          level: el.level,
+          numberOfapprentice: el.numberOfapprentice,
+        })),
+        actions: schoolsStore.actionsSchool.map((el) => ({
+          name: el.name,
+          level: el.level,
+        })),
+      }),
     )
     if (schoolKey !== keys.value.schoolKey) {
       console.log('school key is not correct')
@@ -187,7 +213,11 @@ export const useSaveStore = defineStore('UseSave', () => {
       uncorruptSave = false
     }
 
-    saveStoryLine = useLocalStorage<SaveStoryLine>('storyLine', { progress: 0 , completed: false }, { writeDefaults: true })
+    saveStoryLine = useLocalStorage<SaveStoryLine>(
+      'storyLine',
+      { progress: 0, completed: false },
+      { writeDefaults: true },
+    )
 
     const storyLineKey = await getHash(JSON.stringify(saveStoryLine.value))
     if (storyLineKey !== keys.value.storyLineKey) {
@@ -238,15 +268,25 @@ export const useSaveStore = defineStore('UseSave', () => {
       },
       { writeDefaults: true },
     )
-    saveStoryLine = useLocalStorage<SaveStoryLine>('storyLine', { progress: 0, completed: false }, { writeDefaults: true })
+    saveStoryLine = useLocalStorage<SaveStoryLine>(
+      'storyLine',
+      { progress: 0, completed: false },
+      { writeDefaults: true },
+    )
     saveSchool = useLocalStorage<SaveSchools>(
       'schools',
-      schoolsStore.schools.map((el) => ({
-        name: el.name,
-        currentXp: el.currentXp,
-        level: el.level,
-        numberOfapprentice: el.numberOfapprentice,
-      })),
+      {
+        schools: schoolsStore.schools.map((el) => ({
+          name: el.name,
+          currentXp: el.currentXp,
+          level: el.level,
+          numberOfapprentice: el.numberOfapprentice,
+        })),
+        actions: schoolsStore.actionsSchool.map((el) => ({
+          name: el.name,
+          level: el.level,
+        })),
+      },
       { writeDefaults: true },
     )
     saveBuffs = useLocalStorage<Buff[]>('buffs', [], { writeDefaults: true })
@@ -280,6 +320,7 @@ export const useSaveStore = defineStore('UseSave', () => {
     schoolsStore.reset()
     storyLineStore.reset()
     appStore.reset()
+    unlockStore.reset()
     await initSave()
     boucle.lauchBoucle()
   }

@@ -1,4 +1,4 @@
-import { ref, computed, markRaw, shallowRef } from 'vue'
+import { ref, computed, markRaw, shallowRef, triggerRef } from 'vue'
 import { defineStore } from 'pinia'
 import { useLocalStorage } from '@vueuse/core'
 import type { ModalComponent, StoryLine, StoryLineData } from '@/types/ressources'
@@ -9,7 +9,12 @@ export const useAppStore = defineStore('app', () => {
   const ready = ref(false)
   const messagesModal = ref<Component[]>([])
   const modalIsShow = computed(() => messagesModal.value.length > 0)
-  const storyLineModal = shallowRef<{show:boolean,story:StoryLine,storyData:StoryLineData}| null>(null)
+  const storyLineModal = shallowRef<{show:boolean,story:StoryLine | null,storyData:StoryLineData | null,history:{story:StoryLine,storyData:StoryLineData}[]}>({
+    show: false,
+    story: null,
+    storyData:null,
+    history: []
+  })
   const app = useLocalStorage('app', {
     version: '1.0.0',
     init: false,
@@ -19,7 +24,9 @@ export const useAppStore = defineStore('app', () => {
       resolve(true)
     })
   }
-
+function triggerStoryLineModal() {
+  triggerRef(storyLineModal)
+}
   function setModal(message: Component) {
     messagesModal.value.push(markRaw(message))
   }
@@ -30,6 +37,15 @@ export const useAppStore = defineStore('app', () => {
   function reset() {
     messagesModal.value = messagesModal.value[0] ? [messagesModal.value[0]] : []
   }
+  function nextStoryline() {
+    if(storyLineModal.value.history.length === 0) return
+    const nextStory = storyLineModal.value.history.shift()
+    if(nextStory) {
+      storyLineModal.value.story = nextStory.story
+      storyLineModal.value.storyData = nextStory.storyData
+    }
+  }
+  const storyModalHasHistory = computed(() => storyLineModal.value.history.length > 0)
   return {
     init,
     isLoading,
@@ -41,5 +57,8 @@ export const useAppStore = defineStore('app', () => {
     popMessageModal,
     reset,
     storyLineModal,
+    triggerStoryLineModal,
+    nextStoryline,
+    storyModalHasHistory
   }
 })

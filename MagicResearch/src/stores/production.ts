@@ -68,7 +68,7 @@ export const useProductionStore = defineStore('production', () => {
   }
   function updateWithBuildings(production:typeof wizardStore.production,multipliers:typeof wizardStore.multipliers) {
     wizardStore.buildings.forEach((building) => {
-      console.log("building ",building.name)
+      ///console.log("building ",building.name)
       Object.entries(building.effects.ressources ?? {}).forEach(([key, value]) => {
         //console.log("key ",key)
         //console.log("value ",value)
@@ -120,18 +120,18 @@ export const useProductionStore = defineStore('production', () => {
         }
       })
       Object.entries(buff.effects.multipliers ?? {}).forEach(([key, value]) => {
-        console.log("key ",key)
-        console.log("value ",value)
+        //console.log("key ",key)
+        //console.log("value ",value)
         if (key in multipliers) {
-          console.log("key found",key)
-          console.log("before value ",multipliers[key as keyof typeof multipliers])
+          //console.log("key found",key)
+          //console.log("before value ",multipliers[key as keyof typeof multipliers])
           multipliers[key as keyof typeof multipliers] += value
-          console.log("after value ",multipliers[key as keyof typeof multipliers])
+          //console.log("after value ",multipliers[key as keyof typeof multipliers])
         }
       })
     })
-    console.log("production ",production)
-    console.log("multipliers ",multipliers)
+    //console.log("production ",production)
+    //console.log("multipliers ",multipliers)
     return {production,multipliers}
   }
   function updateWizard(production:typeof wizardStore.production,multipliers:typeof wizardStore.multipliers){

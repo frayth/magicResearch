@@ -17,14 +17,21 @@
     </div>
 
     <div class="spells-area">
-      <div v-if="availableSpellBySchool.length > 0" class="spells-grid">
+      <div v-if="availableSpellBySchool.length > 0" class="spells-list">
         <button
           v-for="spell in availableSpellBySchool"
           :key="spell.name"
           @click="schoolsStore.castSpell(spell)"
-          class="spell-card"
+          class="spell-row"
         >
-          <span class="spell-name">{{ spell.name }}</span>
+          <div class="spell-info">
+            <span class="spell-icon">✨</span>
+            <span class="spell-name">{{ spell.name }}</span>
+          </div>
+
+          <div class="spell-cost-tag">
+            <RichText>&mana.value:{{ spell.cost }}&</RichText>
+          </div>
         </button>
       </div>
 
@@ -39,6 +46,7 @@
 <script setup lang="ts">
 import { useSchoolsStore } from '@/stores/schools'
 import { computed, ref } from 'vue'
+import RichText from '../UI/RichText.vue'
 
 const schoolsStore = useSchoolsStore()
 const selectedSchool = ref('illusion')
@@ -51,20 +59,21 @@ const availableSpellBySchool = computed(() => {
   )
 })
 </script>
+
 <style scoped>
 .spellbook-container {
   width: 100%;
-  background: #0f172a; /* Bleu nuit profond (Contraste max) */
-  padding: 24px;
-  border-radius: 20px;
+  background: #0f172a;
+  padding: 20px;
+  border-radius: 16px;
   border: 1px solid #334155;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  font-family: 'Inter', system-ui, sans-serif;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  font-family: 'Inter', sans-serif;
 }
 
-/* --- SELECTOR STYLE --- */
+/* --- SELECTOR --- */
 .header-section {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .section-label {
@@ -73,8 +82,8 @@ const availableSpellBySchool = computed(() => {
   font-weight: 800;
   text-transform: uppercase;
   color: #94a3b8;
-  letter-spacing: 1.5px;
-  margin-bottom: 8px;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
   margin-left: 4px;
 }
 
@@ -86,112 +95,105 @@ const availableSpellBySchool = computed(() => {
 
 .school-select {
   width: 100%;
-  appearance: none; /* Cache la flèche native */
+  appearance: none;
   background: #1e293b;
-  border: 2px solid #334155;
+  border: 1px solid #334155;
   color: #f8fafc;
-  padding: 12px 16px;
-  border-radius: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 0.9rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: border-color 0.2s;
 }
 
 .school-select:focus {
   outline: none;
   border-color: #3b82f6;
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
 }
 
 .select-arrow {
   position: absolute;
-  right: 16px;
+  right: 14px;
   color: #3b82f6;
   pointer-events: none;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
 }
 
-/* --- SPELLS GRID --- */
-.spells-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+/* --- LISTE DES SORTS --- */
+.spells-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.spell-row {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #1e293b;
+  border: 1px solid #334155;
+  padding: 12px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.spell-info {
+  display: flex;
+  align-items: center;
   gap: 12px;
 }
 
-.spell-card {
-  all: unset;
-  position: relative;
-  background: #1e293b;
-  border: 1px solid #334155;
-  border-radius: 16px;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  overflow: hidden;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
 .spell-icon {
-  font-size: 1.5rem;
-  filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.5));
+  font-size: 1rem;
+  opacity: 0.8;
 }
 
 .spell-name {
   color: #f8fafc;
   font-size: 0.9rem;
-  text-align: center;
-  line-height: 1.2;
 }
 
-/* Effet Magique au Hover */
-.spell-card:hover {
-  transform: translateY(-4px);
-  border-color: #3b82f6;
+.spell-cost-tag {
+  background: rgba(15, 23, 42, 0.6);
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid #334155;
+  font-size: 0.85rem;
+}
+
+/* --- INTERACTIONS --- */
+.spell-row:hover {
   background: #233045;
+  border-color: #3b82f6;
+  transform: translateX(4px); /* Effet de décalage vers la droite */
 }
 
-.spell-glow {
-  position: absolute;
-  bottom: -20px;
-  width: 60px;
-  height: 20px;
-  background: #3b82f6;
-  filter: blur(20px);
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.spell-card:hover .spell-glow {
-  opacity: 0.4;
-}
-
-.spell-card:active {
-  transform: scale(0.95);
+.spell-row:active {
+  transform: translateX(2px) scale(0.99);
 }
 
 /* --- EMPTY STATE --- */
 .empty-state {
-  padding: 40px 20px;
+  padding: 30px;
   text-align: center;
-  background: rgba(30, 41, 59, 0.3);
-  border-radius: 16px;
+  background: rgba(30, 41, 59, 0.2);
+  border-radius: 12px;
   border: 1px dashed #334155;
 }
 
 .empty-icon {
-  font-size: 2rem;
+  font-size: 1.5rem;
+  opacity: 0.4;
   display: block;
-  margin-bottom: 12px;
-  opacity: 0.5;
+  margin-bottom: 8px;
 }
 
 .empty-state p {
   color: #64748b;
-  font-size: 0.9rem;
-  font-style: italic;
+  font-size: 0.85rem;
+  margin: 0;
 }
 </style>

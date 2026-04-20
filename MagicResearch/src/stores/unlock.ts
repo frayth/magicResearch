@@ -15,7 +15,9 @@ export const useUnlockStore = defineStore('unlock', () => {
       }
     }
   }
-
+  function unlock(name: UnlocksNames) {
+    unlocked.value.push(name)
+  }
   async function init() {
     return new Promise((resolve) => {
       resolve(true)
@@ -24,7 +26,9 @@ export const useUnlockStore = defineStore('unlock', () => {
   function checkUnlockStatus(name: UnlocksNames): Boolean {
     return unlocked.value.includes(name)
   }
+  function reset() {
+    unlocked.value = []
+  }
 
-
-  return { init, unlocks, checkUnlocks,checkUnlockStatus,unlocked}
+  return { init, unlocks, checkUnlocks,checkUnlockStatus,unlocked, reset,unlock}
 })

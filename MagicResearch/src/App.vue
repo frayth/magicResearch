@@ -11,6 +11,7 @@ import { useStoryLineStore } from './stores/storyLine'
 import { useSchoolsStore } from './stores/schools'
 import { useSaveStore } from './stores/save'
 import ModalElement from './components/Modals/modalElement.vue'
+import StoryLineModal from './components/Modals/storyLineModal.vue'
 const appStore = useAppStore()
 const boucleManagerStore = useBoucleManagerStore()
 const builderStore = useBuilderStore()
@@ -49,10 +50,12 @@ Promise.all([
 ]).then(() => {
   appStore.ready = true
 })
+
 </script>
 
 <template>
   <ModalElement v-if="appStore.modalIsShow" />
+  <StoryLineModal v-if="appStore.storyLineModal?.show " />
   <RouterView />
 </template>
 

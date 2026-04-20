@@ -1,16 +1,19 @@
 <script setup lang="ts">
 import { useWizardStore } from '../stores/wizard'
-
+import EventElement from '@/components/elements/EventElement.vue'
 
 import ProductionElements from '../components/elements/ProductionElements.vue'
 import SchoolsElement from '../components/elements/SchoolsElement.vue'
 import MagicElement from '@/components/elements/magicElement.vue'
-import RichText from '@/components/UI/RichText.vue'
 import BuildingElement from '@/components/elements/BuildingElement.vue'
 import ManaBar from '@/components/UI/ManaBar.vue'
 import { useSaveStore } from '@/stores/save'
+import { useUnlockStore } from '@/stores/unlock'
+import { computed } from 'vue'
+
 const wizardStore = useWizardStore()
 const saveStore = useSaveStore()
+const unlockStore = useUnlockStore()
 
 </script>
 
@@ -31,9 +34,9 @@ const saveStore = useSaveStore()
     <div>
 
     </div>
-    <SchoolsElement />
+    <SchoolsElement v-if="unlockStore.checkUnlockStatus('Researcher')" />
     <MagicElement />
-    <RichText>salut jai &fire.name&</RichText>
+    <EventElement />
   </main>
 </template>
 <style scoped>

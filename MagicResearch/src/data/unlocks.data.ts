@@ -6,7 +6,7 @@ import { useUnlockStore } from '@/stores/unlock'
 
 import { computed, type ComputedRef } from 'vue'
 //locked propertie determine if unlock can'tbe unlock automatically or not
-export type UnlocksNames ='test'|'Puit de mana'|'Puit d\'eau'|'Cascade'|'Manashard'|'Entrepot'|'Forêt'|'Storage water'|'lumberYard'
+export type UnlocksNames ='test'|'Puit de mana'|'Puit d\'eau'|'Cascade'|'Manashard'|'Entrepot'|'Forêt'|'Storage water'|'lumberYard'|'Researcher'
 
 export function exportUnlocksData() {
   const wizardStore = useWizardStore()
@@ -68,7 +68,13 @@ export function exportUnlocksData() {
       conditions: computed(() => {
         const hasForet=unlockStore.unlocked.some((unlock) => unlock === 'Forêt')
         return wizardStore.ressources.wood >= 50 && hasForet
-      }),
+      })
+    },
+    {
+      name:'Researcher',
+      conditions: computed(() =>{
+        return false
+      })
     }
   ]
 
