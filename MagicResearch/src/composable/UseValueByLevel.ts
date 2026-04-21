@@ -129,8 +129,8 @@ export function useValueByLevel(options: UseValueByLevelOptions) {
    */
   const progress = computed(() => {
     const currentLevel = typeof level === 'number' ? level : level.value;
-    const clampedLevel = Math.max(1, Math.min(currentLevel, maxLevel));
-    return (clampedLevel - 1) / (maxLevel - 1);
+    const clampedLevel = Math.max(minLevel, Math.min(currentLevel, maxLevel));
+    return (clampedLevel - minLevel) / (maxLevel - minLevel);
   });
 
   /**

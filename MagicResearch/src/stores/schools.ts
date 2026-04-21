@@ -72,9 +72,7 @@ export const useSchoolsStore = defineStore('schools', () => {
     schools.value.forEach((school) => {
       school.currentXp +=
         (wizardStore.ressources.xpByApprentice *
-          school.numberOfapprentice *
-          math.transformPercentage(wizardStore.multipliers.xpByApprentice)) /
-        interval
+          school.numberOfapprentice )
       if (school.currentXp >= getNextLevelXp(school)) {
         school.level++
         school.currentXp = 0

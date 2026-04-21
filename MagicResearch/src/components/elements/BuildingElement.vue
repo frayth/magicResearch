@@ -30,7 +30,7 @@
       <ButtonBuilding id="eclatdemana" />
       <RichText>Augmente la quantité de mana que tu peux stocker. &mana.value:+100.max& </RichText>
       <RichText class="tips"
-        >Tip:Tu peux avoir plus de &coin.name& avec le sort d'illusion, Tour de magie!</RichText
+        >Tip:Tu peux avoir plus de &coins.name& avec le sort d'illusion, Tour de magie!</RichText
       >
       <CostElement id="eclatdemana" />
     </div>
@@ -51,6 +51,7 @@
       <RichText
         >Génére automatiquement de l'au et remplie ta réserve. &water.value:+0.5.time&</RichText
       >
+      <CostElement id="cascade" />
     </div>
   </div>
   <div>
@@ -68,6 +69,14 @@
         >Permet de stocker plus d'eau. &water.value:+250.max&
       </RichText>
       <CostElement id="waterTank" />
+    </div>
+  </div>
+  <div>
+    <h2>Ammenagement</h2>
+    <div v-if="unlockStore.checkUnlockStatus('cabinResearcher')">
+      <ButtonBuilding id="ResearchCabin" />
+      <div> Permet de recruter plus d'apprentis. <span class="effect-text">Apprentis max +1</span></div>
+      <CostElement id="ResearchCabin" />
     </div>
   </div>
 </template>
@@ -103,7 +112,7 @@ div > div {
   flex-direction: column;
   gap: 0.5rem;
 }
-
+.effect-text { color: #10b981; font-weight: 700; }
 /* Boutons de production et bâtiments */
 ButtonProduction,
 ButtonBuilding {

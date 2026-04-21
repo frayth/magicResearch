@@ -124,10 +124,7 @@ export type SaveSchools ={
   }[]
 }
 
-export type SaveUnlocks = {
-  name: UnlocksNames
-  unlock: boolean
-}[]
+
 
 export type SaveStoryLine = {
   progress: number
@@ -215,4 +212,12 @@ export type Action = {
   levelMax:number
   description: string
   effects: () => void
+}
+export type SaveKeys = {
+  ressourcesKey: string
+  schoolKey: string
+  buildingKey: string
+  unlockKey: string
+  buffKey: string
+  storyLineKey: string
 }

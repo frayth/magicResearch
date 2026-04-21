@@ -3,7 +3,7 @@ import { ref, shallowRef } from 'vue'
 import { useWizardStore } from './wizard'
 import type { UnlocksNames } from '@/data/unlocks.data'
 import { exportUnlocksData } from '@/data/unlocks.data'
-import type { SaveUnlocks, Unlock } from '@/types/ressources'
+import type {  Unlock } from '@/types/ressources'
 export const useUnlockStore = defineStore('unlock', () => {
   const unlocks = shallowRef<Unlock[]>(exportUnlocksData())
   const unlocked = ref<UnlocksNames[]>([])

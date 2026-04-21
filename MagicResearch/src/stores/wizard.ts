@@ -14,6 +14,7 @@ import type {
   storyProgress,
 } from '@/types/ressources'
 import type { BuildingId } from '@/data/buildings.data'
+import { defaultMultipliersREssources, defaultRessources, } from '@/data/defaultValue.data'
 
 
 export const useWizardStore = defineStore('wizard', () => {
@@ -64,7 +65,7 @@ export const useWizardStore = defineStore('wizard', () => {
     prodwater: 0,
     prodstone: 0,
     xpByApprentice:0,
-    apprenticeCapacity:1,
+    apprenticeCapacity:0,
     numberOfApprentice:0,
   })
   const production = ref<BaseProduction>({
@@ -102,7 +103,7 @@ export const useWizardStore = defineStore('wizard', () => {
     stonemax: 50,
     prodmana: 0,
     prodwood:0,
-    prodwater: 0,
+    prodwater: 30,
     prodstone: 0,
     numberOfApprentice:0,
     apprenticeCapacity:1,
@@ -129,8 +130,8 @@ export const useWizardStore = defineStore('wizard', () => {
     prodwater: 0,
     prodstone: 0,
     numberOfApprentice:0,
-    apprenticeCapacity:1,
-    xpByApprentice:0,
+    apprenticeCapacity:0,
+    xpByApprentice:500,
   })
 
   const buildings = ref<BuildingWizard[]>([])
@@ -257,10 +258,12 @@ export const useWizardStore = defineStore('wizard', () => {
     spell.effect()
   }
   function reset() {
-    ressources.value = { ...baseProduction.value }
+    console.log('reset wizard')
+    ressources.value = { ...defaultRessources }
+    multipliers.value = { ...defaultMultipliersREssources }
+    production.value = {...defaultRessources}
     buildings.value = []
     buffs.value = []
-    production.value = baseProduction.value
     ressourcesNeedToBeUpdated.value = true
     storyProgress.value = { progress: 0, completed: false }
 
