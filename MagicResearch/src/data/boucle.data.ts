@@ -1,1 +1,1 @@
-export const saveCooldown = 5000
+export const saveCooldown = 500

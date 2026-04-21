@@ -33,17 +33,14 @@ import type { Building } from "@/types/ressources"
           prodwater:0.5
         },
         multipliers:{
-          watermax:20,
-          manamax:20
-
         }
       },
       cost:[
         {
           level:0,
           cost:{
-            water:{maxValue:100,minValue:10},
-            mana:{maxValue:100,minValue:10}
+            water:{maxValue:10000,minValue:10},
+            mana:{maxValue:25000,minValue:10}
           }
         }
       ]
@@ -125,6 +122,27 @@ import type { Building } from "@/types/ressources"
       effects:{
         ressources:{
           prodwood:1
+        }
+      }
+    },
+    {
+      name:'Chambre de chercheur',
+      id:'ResearchCabin',
+      levelMax:100,
+      level:0,
+      easings:'expo',
+      cost:[{
+        level:0,
+        cost:{
+
+          coins:{minValue:150,maxValue:500000},
+          stone:{minValue:110,maxValue:25000},
+          wood:{minValue:320,maxValue:15000}
+        }
+      }],
+      effects:{
+        ressources:{
+          apprenticeCapacity:1
         }
       }
     }
