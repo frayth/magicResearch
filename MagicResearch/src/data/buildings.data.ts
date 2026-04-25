@@ -1,16 +1,31 @@
 import type { Building } from "@/types/ressources"
+import { useWizardStore } from "@/stores/wizard"
+import { useMathStore } from "@/stores/math"
 //export type EasingType = 'linear' | 'quad' | 'cubic' | 'quart' | 'expo' | 'sine';
-  export const buildingsData=[
+
+export type BuildingId =
+  | 'puitDeMana'
+  | 'cascade'
+  | 'eclatdemana'
+  | 'entrepot'
+  | 'waterTank'
+  | 'lumberYard'
+  | 'ResearchCabin'
+
+
+export function getBuildingList(): Building[] {
+  const wizardStore = useWizardStore()
+  const mathStore = useMathStore()
+  return [
     {
       name:"Puit de mana",
       id:"puitDeMana",
       levelMax:100,
       level:0,
       easings:'expo',
-      effects:{
-        ressources:{
-          prodmana:0.5
-        }
+      multiplier:0,
+      effects:function (this:Building) {
+        wizardStore.ressources.production.prodmana+=(0.5 * this.level) * mathStore.transformPercentage(this.multiplier)
       },
       cost:[
         {
@@ -28,12 +43,9 @@ import type { Building } from "@/types/ressources"
       levelMax:10,
       level:0,
       easings:'expo',
-      effects:{
-        ressources:{
-          prodwater:0.5
-        },
-        multipliers:{
-        }
+      multiplier:0,
+      effects:function (this:Building) {
+        wizardStore.ressources.production.prodwater+=(0.5 * this.level)
       },
       cost:[
         {
@@ -58,10 +70,9 @@ import type { Building } from "@/types/ressources"
           coins:{minValue:100,maxValue:500000}
         }
       }],
-      effects:{
-        ressources:{
-          manamax:100
-        }
+      multiplier:0,
+      effects:function (this:Building) {
+        wizardStore.ressources.limits.manamax+=(100 * this.level)
       }
     },{
       name:'Entrepot',
@@ -77,11 +88,10 @@ import type { Building } from "@/types/ressources"
           stone:{minValue:30,maxValue:20000}
         }
       }],
-      effects:{
-        ressources:{
-          stonemax:400,
-          woodmax:400
-        }
+      multiplier:0,
+      effects:function (this:Building) {
+        wizardStore.ressources.limits.stonemax+=(400 * this.level)
+        wizardStore.ressources.limits.woodmax+=(400 * this.level)
       }
     },
     {
@@ -99,10 +109,9 @@ import type { Building } from "@/types/ressources"
           wood:{minValue:300,maxValue:10000}
         }
       }],
-      effects:{
-        ressources:{
-          watermax:400
-        }
+      multiplier:0,
+      effects:function (this:Building) {
+        wizardStore.ressources.limits.watermax+=(400 * this.level)
       }
     },{
       name:'Scierie',
@@ -119,10 +128,9 @@ import type { Building } from "@/types/ressources"
           wood:{minValue:25,maxValue:10000}
         }
       }],
-      effects:{
-        ressources:{
-          prodwood:1
-        }
+      multiplier:0,
+      effects:function (this:Building) {
+        wizardStore.ressources.production.prodwood+=(1 * this.level)
       }
     },
     {
@@ -140,14 +148,11 @@ import type { Building } from "@/types/ressources"
           wood:{minValue:320,maxValue:15000}
         }
       }],
-      effects:{
-        ressources:{
-          apprenticeCapacity:1
-        }
+      multiplier:0,
+      effects:function (this:Building) {
+        wizardStore.ressources.school.apprenticeCapacity+=(1 * this.level)
       }
     }
-  ] as const
+  ]
 
-export type BuildingId = (typeof buildingsData)[number]['id']
-
-export const buildings = buildingsData.map(b => ({...b})) as unknown as Building[]
+}

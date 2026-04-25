@@ -3,6 +3,7 @@ import type { RessourcesKey } from '@/types/ressources'
 import type { BuildingId } from '@/data/buildings.data'
 import { useWizardStore } from '@/stores/wizard'
 import { useUnlockStore } from '@/stores/unlock'
+import { useBuildingsStore } from '@/stores/buildings'
 
 import { computed, type ComputedRef } from 'vue'
 //locked propertie determine if unlock can'tbe unlock automatically or not
@@ -11,63 +12,64 @@ export type UnlocksNames ='test'|'Puit de mana'|'Puit d\'eau'|'Cascade'|'Manasha
 export function exportUnlocksData() {
   const wizardStore = useWizardStore()
   const unlockStore = useUnlockStore()
+  const buildingsStore = useBuildingsStore()
   const unlocksData:Unlock[] = [
     {
       name: 'test',
       conditions: computed(() => {
-        return wizardStore.ressources.mana >= 10
+        return wizardStore.ressources.incremental.mana >= 10
       }),
 
     },
     {
       name: 'Puit de mana',
       conditions: computed(() => {
-        return wizardStore.ressources.mana >= 10
+        return wizardStore.ressources.incremental.mana >= 10
       }),
     },
     {
       name:'Puit d\'eau',
       conditions: computed(() => {
-        return wizardStore.ressources.water >= 10
+        return wizardStore.ressources.incremental.water >= 10
       }),
     },
     {
       name:'Cascade',
       conditions: computed(() => {
-        const HasPuitEau = wizardStore.buildings.some((building) => building.id === 'puitDeMana')
-        return HasPuitEau && wizardStore.ressources.water >= 10
+        const HasPuitEau = buildingsStore.wizardBuildings.some((building) => building.id === 'puitDeMana')
+        return HasPuitEau && wizardStore.ressources.incremental.water >= 10
       }),
     },
     {
       name:"Manashard",
       conditions: computed(() => {
-        return wizardStore.ressources.mana >= wizardStore.ressources.manamax
+        return wizardStore.ressources.incremental.mana >= wizardStore.ressources.limits.manamax
       }),
     },
     {
       name:'Entrepot',
       conditions: computed(() => {
-        return wizardStore.ressources.stone >= wizardStore.ressources.stonemax
+        return wizardStore.ressources.incremental.stone >= wizardStore.ressources.limits.stonemax
       }),
     },
     {
       name:'Forêt',
       conditions: computed(() => {
-        return wizardStore.ressources.coins >= 100 && wizardStore.buildings.some((building) => building.id === 'entrepot')
+        return wizardStore.ressources.incremental.coins >= 100 && buildingsStore.wizardBuildings.some((building) => building.id === 'entrepot')
       }),
     },
     {
       name:'Storage water',
       conditions: computed(() => {
         const hasForet=unlockStore.unlocked.some((unlock) => unlock === 'Forêt')
-        return wizardStore.ressources.water >= wizardStore.ressources.watermax && hasForet
+        return wizardStore.ressources.incremental.water >= wizardStore.ressources.limits.watermax && hasForet
       }),
     },
     {
       name:'lumberYard',
       conditions: computed(() => {
         const hasForet=unlockStore.unlocked.some((unlock) => unlock === 'Forêt')
-        return wizardStore.ressources.wood >= 50 && hasForet
+        return wizardStore.ressources.incremental.wood >= 50 && hasForet
       })
     },
     {

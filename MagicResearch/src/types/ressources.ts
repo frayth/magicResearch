@@ -28,24 +28,18 @@ export interface School {
   baseXp: number
   currentXp: number
   exponentielXp: number
-  numberOfapprentice: number,
+  numberOfapprentice: number
   spells: Spell[]
 }
 
 export interface Building {
   name: string
-  id: string
+  id: BuildingId
   level: number
   levelMax: number
   easings: EasingType
-  effects: {
-    ressources?: {
-      [k in RessourcesKey]?: number
-    }
-    multipliers?: {
-      [k in MultipliersKey]?: number
-    }
-  }
+  multiplier: number
+  effects: (this: Building) => void
   cost: {
     level: number
     cost: {
@@ -54,126 +48,38 @@ export interface Building {
   }[]
 }
 
-export interface BuildingWizard {
-  cost: { [k in RessourcesKey]?: number }
-  effects: {
-    ressources?: {
-      [key: string]: number
-    }
-    multipliers?: {
-      [key: string]: number
-    }
-  }
-  level: number
-  levelMax: number
-  name: string
-  id: BuildingId
-}
-export type RessourcesKey = keyof BaseProduction
+export type RessourcesKey = keyof Ressources['incremental']
 type RessourcesEffects = {
   [k in RessourcesKey]?: number
 }
 
-type MultipliersKey = keyof Pick<
-  BaseMultipliers,
-  | 'prodmana'
-  | 'prodwater'
-  | 'prodstone'
-  | 'manualmana'
-  | 'manualwater'
-  | 'manamax'
-  | 'watermax'
-  | 'stonemax'
-  | 'prodcoins'
-  | 'coinsmax'
-  | 'woodmax'
-  | 'prodwood'
->
-type MultipliersEffects = {
-  [k in MultipliersKey]?: number
-}
-type BuildingEffects = {
-  [k in BuildingId]?: number
-}
-type BuildingMap = Partial<Record<BuildingId, number>>
 export interface Buff {
   name: string
   duration: number
-  effects: {
-    ressources?: RessourcesEffects
-    multipliers?: MultipliersEffects
-    buildings?: BuildingEffects
-  }
+  effects: () => void
   unique: boolean
 }
 export type SaveRessources = {
-  ressources: BaseProduction
-  baseProduction: BaseProduction
-  baseMultipliers: BaseMultipliers
+  current: Ressources
+  starting: Ressources
 }
 export type SaveBuildings = {
   id: BuildingId
   level: number
 }[]
 
-export type SaveSchools ={
-  schools:Pick<School, 'name' | 'currentXp' | 'level' | 'numberOfapprentice'>[],
+export type SaveSchools = {
+  schools: Pick<School, 'name' | 'currentXp' | 'level' | 'numberOfapprentice'>[]
   actions: {
-    name:SchoolAction,
-    level:number,
+    name: SchoolAction
+    level: number
   }[]
 }
-
-
 
 export type SaveStoryLine = {
   progress: number
   completed: boolean
 }
-export interface BaseProduction {
-  mana: number
-  water: number
-  wood: number
-  coins: number
-  stone: number
-  manamax: number
-  woodmax: number
-  watermax: number
-  stonemax: number
-  coinsmax: number
-  prodwood: number
-  prodcoins: number
-  prodmana: number
-  prodwater: number
-  prodstone: number
-  xpByApprentice: number
-  numberOfApprentice: number
-  apprenticeCapacity: number
-}
-
-export interface Ressources {
-  mana: number
-  coins: number
-  water: number
-  wood: number
-  stone: number
-  manamax: number
-  woodmax: number
-  watermax: number
-  stonemax: number
-  prodmana: number
-  prodwood: number
-  prodwater: number
-  prodstone: number
-}
-
-export interface BaseMultipliers extends BaseProduction {
-  manualmana: number
-  manualwater: number
-  manualwood: number
-}
-
-export type IncrementalRessources = 'mana' | 'water' | 'stone' | 'coins' | 'wood'
 
 export type ModalComponent = typeof Cheat
 
@@ -209,7 +115,7 @@ export type Action = {
   cost: {
     [k in RessourcesKey]?: { minValue: number; maxValue: number }
   }
-  levelMax:number
+  levelMax: number
   description: string
   effects: () => void
 }
@@ -220,4 +126,71 @@ export type SaveKeys = {
   unlockKey: string
   buffKey: string
   storyLineKey: string
+}
+
+export type Ressources = {
+  incremental: IncrementalRessources
+  production: productionRessources
+  limits: limitsRessources
+  school: SchoolRessources
+  manual: manualRessources
+  multipliers: multipliersRessources
+}
+
+export type IncrementalRessources = {
+  mana: number
+  water: number
+  wood: number
+  coins: number
+  stone: number
+}
+export type productionRessources = {
+  prodmana: number
+  prodwater: number
+  prodwood: number
+  prodcoins: number
+  prodstone: number
+}
+export type limitsRessources = {
+  manamax: number
+  watermax: number
+  woodmax: number
+  stonemax: number
+  coinsmax: number
+}
+export type manualRessources = {
+  manualmana: number
+  manualwater: number
+  manualwood: number
+}
+export type multipliersRessources = {
+  prodmana: number
+  prodwater: number
+  prodwood: number
+  prodcoins: number
+  prodstone: number
+  manualmana: number
+  manualwater: number
+  manualwood: number
+  manamax: number
+  watermax: number
+  woodmax: number
+  stonemax: number
+  coinsmax: number
+  xpByApprentice: number
+  apprenticeCapacity: number
+  numberOfApprentice: number
+}
+export type SchoolRessources = {
+  xpByApprentice: number
+  apprenticeCapacity: number
+  numberOfApprentice: number
+}
+export type BuildingWizard = {
+  cost: Record<RessourcesKey, number>
+  level: number
+  id: BuildingId
+  name: string
+  effects: () => void
+  levelMax: number
 }

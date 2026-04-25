@@ -1,14 +1,14 @@
 <template>
   <div class="resources-container">
-    <div v-for="res in resourceList" :key="res.key" class="resource-card">
+    <div v-for="res in resourceList" :key="res" class="resource-card">
       <div class="resource-info">
         <div class="resource-name">
-          <RichText>{{ `&${res.key}.name&` }}</RichText>
+          <RichText>{{ `&${res}.name&` }}</RichText>
         </div>
         <div class="resource-values">
-          <span class="current">{{ wizardStore.formatedRessources[res.key] }}</span>
+          <span class="current">{{ Math.floor(wizardStore.ressources.incremental[res]) }}</span>
           <span class="separator">/</span>
-          <span class="max">{{ wizardStore.formatedRessources[res.key + 'max'] }}</span>
+          <span class="max">{{ wizardStore.ressources.limits[res + 'max' as keyof typeof wizardStore.ressources.limits] }}</span>
         </div>
       </div>
     </div>
@@ -18,22 +18,18 @@
 <script setup lang="ts">
 import { useWizardStore } from '@/stores/wizard';
 import RichText from '../UI/RichText.vue';
+import type { IncrementalRessources } from '@/types/ressources';
 
-const wizardStore = useWizardStore();
+const wizardStore = useWizardStore()
 
 // Liste pour éviter la répétition HTML
-const resourceList = [
-  { key: 'water' },
-  { key: 'stone' },
-  { key: 'coins' },
-  { key: 'wood' }
-];
+const resourceList = Object.keys(wizardStore.ressources.incremental).map(key => key as keyof IncrementalRessources)
 </script>
 
 <style scoped>
 .resources-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 12px;
   padding: 16px;
   background: rgba(30, 41, 59, 0.03); /* Très léger fond ardoise */
@@ -61,6 +57,7 @@ const resourceList = [
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 10px;
 }
 
 .resource-name {
@@ -97,3 +94,4 @@ const resourceList = [
 
 
 </style>
+

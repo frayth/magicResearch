@@ -7,7 +7,7 @@
           <RichText>
  &{{ ressource.key }}.name&
     </RichText>
-    <p><span :class="{notEnought:!ressourceIsEnought(ressource.key,ressource.value.value)}">{{ wizardStore.formatedRessources[ressource.key as keyof typeof wizardStore.formatedRessources] }}</span>/{{ formatShowedValue(ressource.value.value) }}</p>
+    <p><span :class="{notEnought:!ressourceIsEnought(ressource.key,ressource.value.value)}">{{ formatShowedValue(wizardStore.ressources.incremental[ressource.key]) }}</span>/{{ formatShowedValue(ressource.value.value) }}</p>
     </div>
 
   </div>
@@ -20,15 +20,16 @@ import { formatShowedValue } from '@/composable/formatShowedValue';
 import RichText from './RichText.vue';
 import type { useValueByLevel } from '@/composable/UseValueByLevel';
 import { computed } from 'vue';
+import type { IncrementalRessources } from '@/types/ressources';
 interface Props {
-  cost:Record<string, ReturnType<typeof useValueByLevel>>
+  cost:Record<keyof IncrementalRessources, ReturnType<typeof useValueByLevel>>
 }
 
 const props=defineProps<Props>();
 const wizardStore=useWizardStore()
 
 const cost = Object.entries(props.cost).map(([key, value]) => ({
-  key,
+  key: key as keyof IncrementalRessources,
   value: value.value
 }))
 
@@ -39,8 +40,8 @@ const costIsEnought = computed(() => {
 defineExpose({
   ressourceIsEnought:costIsEnought
 })
-function ressourceIsEnought(key:string,value:number | undefined){
-  const ressource=wizardStore.formatedRessources[key as keyof typeof wizardStore.formatedRessources]
+function ressourceIsEnought(key:keyof IncrementalRessources ,value:number | undefined){
+  const ressource=wizardStore.ressources.incremental[key]
   if(!ressource || !value) return false
   return ressource >= value
 }
@@ -93,3 +94,4 @@ function ressourceIsEnought(key:string,value:number | undefined){
   color: red;
 }
 </style>
+

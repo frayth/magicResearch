@@ -7,7 +7,7 @@
           <RichText>
  &{{ key }}.name&
     </RichText>
-    <p><span :class="{notEnought:!ressourceIsEnought(key,value)}">{{ wizardStore.formatedRessources[key as keyof typeof wizardStore.formatedRessources] }}</span>/{{ formatShowedValue(value!) }}</p>
+    <p><span :class="{notEnought:!ressourceIsEnought(key,value)}">{{ formatShowedValue(wizardStore.ressources.incremental[key]) }}</span>/{{ formatShowedValue(value!) }}</p>
     </div>
 
   </div>
@@ -21,19 +21,20 @@ import type {BuildingId} from '@/data/buildings.data';
 import { computed } from 'vue';
 import { formatShowedValue } from '@/composable/formatShowedValue';
 import RichText from './RichText.vue';
+import type { IncrementalRessources } from '@/types/ressources';
 interface Props {
   id:BuildingId,
 }
 const props=defineProps<Props>();
 const buildingStore=useBuildingsStore()
 const wizardStore=useWizardStore();
-const wizardHaveBuilding=computed(()=>wizardStore.wizardHaveBuilding(props.id));
+const wizardHaveBuilding=computed(()=>buildingStore.wizardHaveBuilding(props.id));
 const building=computed(()=>buildingStore.getBuilding(props.id,wizardHaveBuilding.value? wizardHaveBuilding.value.level : 0))
 const cost=computed(()=>{
   return building.value!.cost
 })
-function ressourceIsEnought(key:string,value:number | undefined){
-  const ressource=wizardStore.formatedRessources[key as keyof typeof wizardStore.formatedRessources]
+function ressourceIsEnought(key:keyof IncrementalRessources,value:number | undefined){
+  const ressource= wizardStore.ressources.incremental[key]
   if(!ressource || !value) return false
   return ressource >= value
 }

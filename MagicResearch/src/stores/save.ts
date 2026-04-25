@@ -3,7 +3,7 @@ import { timestamp, useLocalStorage, type RemovableRef } from '@vueuse/core'
 import { useWizardStore } from '@/stores/wizard'
 import { useStoryLineStore } from '@/stores/storyLine'
 import { useBoucleManagerStore } from './boucleManager'
-import { defaultRessources, defaultMultipliersREssources } from '@/data/defaultValue.data'
+import { defaultRessource, getDefaultRessource } from '@/data/defaultValue.data'
 import { useAppStore } from './app'
 import { saveCooldown } from '@/data/boucle.data'
 
@@ -74,7 +74,7 @@ export const useSaveStore = defineStore('UseSave', () => {
       console.error('error dans le systeme de sauvegarde')
       return
     }
-    const currentBuildings = wizardStore.buildings.map((el) => ({
+    const currentBuildings =buildingsStore.wizardBuildings.map((el) => ({
       id: el.id,
       level: el.level,
     }))
@@ -91,9 +91,8 @@ export const useSaveStore = defineStore('UseSave', () => {
     saveInStorage('unlocks', currentUnlocks)
 
     saveRessources = {
-      ressources: wizardStore.ressources,
-      baseProduction: wizardStore.baseProduction,
-      baseMultipliers: wizardStore.baseMultipliers,
+      current: JSON.parse(JSON.stringify(wizardStore.ressources)),
+      starting: JSON.parse(JSON.stringify(wizardStore.startingRessources))
     }
     saveInStorage('ressources', saveRessources)
 
@@ -113,13 +112,7 @@ export const useSaveStore = defineStore('UseSave', () => {
     const buildingKey = await getHash(JSON.stringify(currentBuildings))
     const storyLineKey = await getHash(JSON.stringify(currentStoryLine))
     const unlockKey = await getHash(JSON.stringify(currentUnlocks))
-    const ressourcesKey = await getHash(
-      JSON.stringify({
-        ressources: wizardStore.ressources,
-        baseProduction: wizardStore.baseProduction,
-        baseMultipliers: wizardStore.baseMultipliers,
-      }),
-    )
+    const ressourcesKey = await getHash(JSON.stringify(saveRessources))
     const schoolKey = await getHash(
       JSON.stringify({
         schools: schoolsStore.schools.map((el) => ({
@@ -204,19 +197,15 @@ export const useSaveStore = defineStore('UseSave', () => {
       console.log('tricheur')
     }
 
-    wizardStore.ressources = saveRessources!.ressources
-    wizardStore.baseProduction = saveRessources!.baseProduction
-    wizardStore.baseMultipliers = saveRessources!.baseMultipliers
+    wizardStore.ressources = JSON.parse(JSON.stringify(saveRessources!.current))
+    wizardStore.startingRessources = JSON.parse(JSON.stringify(saveRessources!.starting))
     wizardStore.buffs = saveBuffs!
     unlockStore.unlocked = saveUnlocks!
     schoolsStore.setSchools(saveSchool!)
     wizardStore.storyProgress = saveStoryLine!
     storyLineStore.initStoryline()
     saveBuildings!.forEach((building) => {
-      const dataBuilding = buildingsStore.getBuilding(building.id, building.level)
-      if (dataBuilding) {
-        wizardStore.addBuilding(dataBuilding)
-      }
+      buildingsStore.addBuilding(building.id, building.level)
     })
   }
 
@@ -247,15 +236,12 @@ export const useSaveStore = defineStore('UseSave', () => {
     saveInStorage('schools',saveSchool)
     saveBuffs = []
     saveInStorage('buffs',saveBuffs)
-    saveRessources = {
-      ressources: defaultRessources,
-      baseProduction: defaultRessources,
-      baseMultipliers: defaultMultipliersREssources,
+    saveRessources={
+      current:getDefaultRessource(),
+      starting:getDefaultRessource()
     }
-    console.log("defaultMultipliersREssources",defaultMultipliersREssources)
-    wizardStore.ressources = saveRessources!.ressources
-    wizardStore.baseProduction = saveRessources!.baseProduction
-    wizardStore.baseMultipliers = saveRessources!.baseMultipliers
+    wizardStore.ressources = getDefaultRessource()
+    wizardStore.startingRessources = getDefaultRessource()
     saveInStorage('ressources',saveRessources)
     saveBuildings = []
     saveInStorage('buildings',saveBuildings)
@@ -275,12 +261,12 @@ export const useSaveStore = defineStore('UseSave', () => {
     localStorage.removeItem('buffs')
     localStorage.removeItem('keys')
     localStorage.removeItem('storyLine')
-
     schoolsStore.reset()
     storyLineStore.reset()
     appStore.reset()
     unlockStore.reset()
     wizardStore.reset()
+    buildingsStore.reset()
     await initSave()
     boucle.lauchBoucle()
   }

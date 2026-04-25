@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { computed, reactive, ref } from 'vue'
-import type { SaveSchools, School, Spell } from '@/types/ressources'
+import type { IncrementalRessources, SaveSchools, School, Spell } from '@/types/ressources'
 import { useConjurationSchoolSpells } from '@/composable/conjurationSchoolSpells'
 import { useIllusionSchoolSpells } from '@/composable/illusionSchoolSpells'
 import { useEnchantementSchoolSpells } from '@/composable/enchantementSchoolSpells'
@@ -71,7 +71,7 @@ export const useSchoolsStore = defineStore('schools', () => {
   function updateSchools(interval: number) {
     schools.value.forEach((school) => {
       school.currentXp +=
-        (wizardStore.ressources.xpByApprentice *
+        (wizardStore.ressources.school.xpByApprentice *
           school.numberOfapprentice )
       if (school.currentXp >= getNextLevelXp(school)) {
         school.level++
@@ -105,7 +105,7 @@ export const useSchoolsStore = defineStore('schools', () => {
     const xpMax = getNextLevelXp(school)
     const deltaXp = xpMax - school.currentXp
     const timeForLevelUp =
-      deltaXp / (school.numberOfapprentice * wizardStore.ressources.xpByApprentice)
+      deltaXp / (school.numberOfapprentice * wizardStore.ressources.school.xpByApprentice)
 
     if (timeForLevelUp === Infinity) {
       return '∞'
@@ -130,8 +130,7 @@ export const useSchoolsStore = defineStore('schools', () => {
       school.numberOfapprentice = 0
     })
   }
-  function getActionSchoolInfo(name: SchoolAction):{action:SchoolAction, level:number,cost:Record<string, ReturnType<typeof useValueByLevel>>}|undefined {
-
+  function getActionSchoolInfo(name: SchoolAction):{action:SchoolAction, level:number,cost:Record<keyof IncrementalRessources, ReturnType<typeof useValueByLevel>>}|undefined {
     const action=getsSchoolActions().find(action => action.name === name)
     if (!action) return undefined
     const level=actionsSchool.find(action => action.name === name)!.level
@@ -149,7 +148,7 @@ export const useSchoolsStore = defineStore('schools', () => {
   function hireApprentice(){
     const action=actionsSchool.find(action => action.name === 'hire')
     const infoAction = getsSchoolActions().find(action => action.name === 'hire')
-    const haveEnoughtCapacity = wizardStore.ressources.numberOfApprentice < wizardStore.ressources.apprenticeCapacity
+    const haveEnoughtCapacity = wizardStore.ressources.school.numberOfApprentice < wizardStore.ressources.school.apprenticeCapacity
     if(!action || !infoAction ){
       console.error('action \'hire\' not found' )
       return

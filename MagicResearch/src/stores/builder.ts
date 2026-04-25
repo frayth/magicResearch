@@ -10,19 +10,17 @@ export const useBuilderStore = defineStore('builder', () => {
   function build(name: BuildingId) {
     const building = buildingsStore.getBuilding(
       name,
-      wizardStore.wizardHaveBuilding(name)?.level ?? 0,
+      buildingsStore.wizardHaveBuilding(name)?.level ?? 0,
     )
     if (!building) {
       console.error('Building not found')
       return
     }
-    //console.log("building", building)
     if (!removeRessources(building.cost)) return
-    if(!wizardStore.wizardHaveBuilding(name)){
-      wizardStore.addBuilding(building)
+    if (buildingsStore.wizardHaveBuilding(name)) {
+      buildingsStore.upgradeBuilding(name)
     }else{
-      //console.log("upgrade")
-      wizardStore.upgradeBuilding(name)
+      buildingsStore.addBuilding(building.id)
     }
   }
 

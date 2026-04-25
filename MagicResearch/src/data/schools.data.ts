@@ -17,8 +17,8 @@ export function getsSchoolActions() {
       levelMax:99,
       description:'Embauche un apprenti pour aider dans votre école. +1 Apprenti',
       effects(){
-        wizardStore.ressources.numberOfApprentice++
-        wizardStore.ressources.coins -= 500
+        wizardStore.ressources.school.numberOfApprentice++
+        wizardStore.ressources.incremental.coins -= 500
       }
     }
   ] as (Omit<Action, 'name'> & { name: SchoolAction })[]

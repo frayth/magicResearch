@@ -8,7 +8,7 @@
     >
       <span class="btn-label">Améliorer</span>
       <span class="btn-target">{{ building?building.name : 'undefined' }}</span>
-      <span class="btn-level">Niv. {{ building? building.level + 1 : null }}</span>
+      <span class="btn-level">Niv. {{ building? building.level  : null }}</span>
     </button>
 
     <button
@@ -45,7 +45,7 @@ const props=defineProps<Props>();
 const builderStore=useBuilderStore()
 const buildingStore=useBuildingsStore()
 const wizardStore=useWizardStore();
-const wizardHaveBuilding=computed(()=>wizardStore.wizardHaveBuilding(props.id));
+const wizardHaveBuilding=computed(()=>buildingStore.wizardHaveBuilding(props.id));
 const building=computed(()=>buildingStore.getBuilding(props.id,wizardHaveBuilding.value? wizardHaveBuilding.value.level : 0))
 const haveEnoughRessources=computed(()=>wizardStore.checkIfRessourceAreEnough(building.value!.cost))
 const buildingCompleted=computed(()=>building.value!.level  >= building.value!.levelMax)

@@ -342,3 +342,8 @@ expo:    ~0.1  (presque rien, puis boom!)
 **Sinusoïdal** (`sine`):
 - Effets visuels
 - Transitions smooth
+
+
+//TODO 
+BUFF a GERER LORS DU CHARGEMENT DE LA SAVE
+DIFFERENT BUG A RESOUDRE VOIR CONSOLE

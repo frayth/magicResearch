@@ -2,10 +2,12 @@ import type { Buff, Spell } from '@/types/ressources'
 import { useWizardStore } from '@/stores/wizard'
 import { useSchoolsStore } from '@/stores/schools'
 import { useMathStore } from '@/stores/math'
+import { useBuildingsStore } from '@/stores/buildings'
 export function useEnchantementSchoolSpells() {
   const math=useMathStore()
   const wizardStore = useWizardStore()
   const schoolsStore = useSchoolsStore()
+  const buildingsStore = useBuildingsStore()
   function SpellIsCastable(spell: Spell) {
     if (spell.level > schoolsStore.conjurationSchools.level) {
       console.error('spell level too high')
@@ -30,17 +32,18 @@ export function useEnchantementSchoolSpells() {
       cooldown: 0,
       currentCooldown: 0,
       description:
-        'Altere un puit de mana pour produire plus de manapour un temps limité. &mana.value:*2&',
+        'Altere un puit de mana pour produire plus de mana pour un temps limité. &mana.value:*2&',
       effect(this: Spell) {
         const spellIsCastable = SpellIsCastable(this)
         const buff: Buff = {
           name: this.name,
           duration: this.buff ? this.buff.timer : 0,
           unique: this.buff ? this.buff.unique : false,
-          effects: {
-            buildings: {
-              puitDeMana:100
-            },
+          effects:()=>{
+            const puitDeMana = buildingsStore.wizardBuildings.find((building) => building.id === 'puitDeMana')
+            if (puitDeMana) {
+              puitDeMana.multiplier += 100
+            }
           },
         }
         if (spellIsCastable) {

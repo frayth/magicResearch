@@ -5,6 +5,7 @@ import { useWizardStore } from './wizard'
 import { useAppStore } from './app'
 import { useUnlockStore } from './unlock'
 import { useSchoolsStore } from './schools'
+import { useBuildingsStore } from './buildings'
 import StoryLineText from '@/data/storyLine.data'
 import { set } from '@vueuse/core'
 export const useStoryLineStore = defineStore('storyLine', () => {
@@ -13,9 +14,10 @@ export const useStoryLineStore = defineStore('storyLine', () => {
   const appStore = useAppStore()
   const unlockStore = useUnlockStore()
   const schoolsStore = useSchoolsStore()
+  const buildingsStore = useBuildingsStore()
   const FirstStoryWatch = () => {
     return watch(
-      () => wizardStore.buildings.find((b) => b.id === 'eclatdemana')?.level,
+      () => buildingsStore.wizardBuildings.find((b) => b.id === 'eclatdemana')?.level,
       (level) => {
         console.log('watcher activated')
         if (level === 0) {
@@ -36,7 +38,7 @@ export const useStoryLineStore = defineStore('storyLine', () => {
       haveCost: true,
       buttonLabel: 'Payer 200 pièces',
       effects: () => {
-        wizardStore.ressources.coins -= 200
+        wizardStore.ressources.incremental.coins -= 200
         unlockStore.unlock('Researcher')
       },
       trigger: () => {
@@ -45,7 +47,7 @@ export const useStoryLineStore = defineStore('storyLine', () => {
         setStoryLineModal(self, storyData)
       },
       completion: computed(() => {
-        return wizardStore.ressources.coins >= 200
+        return wizardStore.ressources.incremental.coins >= 200
       }),
       watchNextStory: () => {
         return watch(

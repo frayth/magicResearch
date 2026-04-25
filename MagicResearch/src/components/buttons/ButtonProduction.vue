@@ -1,10 +1,11 @@
 <template>
   <button
-    @click="wizardStore.addRessources(props.name,50)"
+    @click="wizardStore.addRessources(props.name,value)"
     ref="buttonProd"
     class="prod-btn"
   >
     {{ text }}
+    {{ value }}
   </button>
 </template>
 
@@ -12,6 +13,8 @@
 import { onLongPress } from '@vueuse/core'
 import { computed, shallowRef, useTemplateRef } from 'vue'
 import { useWizardStore } from '@/stores/wizard'
+import { useMathStore } from '@/stores/math'
+import type { multipliersRessources } from '@/types/ressources'
 
 interface Props {
   name: "mana" | "water" | "coins" | "wood"
@@ -19,17 +22,20 @@ interface Props {
 
 const props = defineProps<Props>()
 const wizardStore = useWizardStore()
+const mathStore = useMathStore()
 
 const htmlRefHook = useTemplateRef('buttonProd')
 const longPressedHook = shallowRef(false)
 const intervalHook = shallowRef<number>()
-
+const value = computed(() => {
+  return wizardStore.ressources.manual[`manual${props.name}` as keyof typeof wizardStore.ressources.manual] * mathStore.transformPercentage(wizardStore.ressources.multipliers[`manual${props.name}` as keyof multipliersRessources])
+})
 function onLongPressCallbackHook() {
   longPressedHook.value = true
-  wizardStore.addRessources(props.name,1)
+  wizardStore.addRessources(props.name,value.value)
 
   intervalHook.value = setInterval(() => {
-    wizardStore.addRessources(props.name,1)
+    wizardStore.addRessources(props.name,value.value)
   }, 1000)
 }
 

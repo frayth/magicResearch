@@ -72,9 +72,9 @@
           <div class="res-details">
             <span class="res-label">Dortoirs</span>
             <div class="res-info-row">
-              <span class="res-value">{{ apprenticeNumber }} / {{ wizardStore.ressources.apprenticeCapacity }}</span>
+              <span class="res-value">{{ apprenticeNumber }} / {{ wizardStore.ressources.school.apprenticeCapacity }}</span>
               <div class="res-mini-gauge">
-                <div class="res-fill capacity" :style="{ width: (apprenticeNumber / wizardStore.ressources.apprenticeCapacity * 100) + '%' }"></div>
+                <div class="res-fill capacity" :style="{ width: (apprenticeNumber / wizardStore.ressources.school.apprenticeCapacity * 100) + '%' }"></div>
               </div>
             </div>
           </div>
@@ -84,7 +84,7 @@
           <div class="res-icon">⚡</div>
           <div class="res-details">
             <span class="res-label">Rendement</span>
-            <span class="res-value highlight">{{ wizardStore.ressources.xpByApprentice }} <span class="res-sub">XP/s</span></span>
+            <span class="res-value highlight">{{ wizardStore.ressources.school.xpByApprentice }} <span class="res-sub">XP/s</span></span>
           </div>
         </div>
       </footer>
@@ -103,7 +103,7 @@
                 </div>
                 <p class="hire-description">Embauchez un nouvel apprenti pour accélérer vos recherches magiques.</p>
                 <div class="hire-costs">
-                  <CostActionElement :cost="hireActionInfo?.cost || {}" ref="HireCostIsEnought" />
+                  <CostActionElement :cost="hireActionInfo!.cost" ref="HireCostIsEnought" />
                 </div>
               </div>
             </div>
@@ -152,12 +152,12 @@ const unlockStore = useUnlockStore()
 type HireType = InstanceType<typeof CostActionElement>
 const HireCostIsEnought = useTemplateRef<HireType>('HireCostIsEnought')
 
-const apprenticeNumber = computed(() => wizardStore.ressources.numberOfApprentice)
+const apprenticeNumber = computed(() => wizardStore.ressources.school.numberOfApprentice)
 const hireActionInfo = computed(() => schoolsStore.getActionSchoolInfo('hire'))
 
 const availableApprentice = computed(() => {
   return (
-    wizardStore.ressources.numberOfApprentice -
+    wizardStore.ressources.school.numberOfApprentice -
     schoolsStore.schools.reduce((total, school) => total + school.numberOfapprentice, 0)
   )
 })
@@ -171,7 +171,7 @@ function hire() {
 }
 
 const HireIsAvailable = computed(() => {
-  return (wizardStore.ressources.numberOfApprentice < wizardStore.ressources.apprenticeCapacity) && HireCostIsEnought.value?.ressourceIsEnought
+  return (wizardStore.ressources.school.numberOfApprentice < wizardStore.ressources.school.apprenticeCapacity) && HireCostIsEnought.value?.ressourceIsEnought
 })
 </script>
 
