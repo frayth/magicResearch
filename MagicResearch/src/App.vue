@@ -12,6 +12,7 @@ import { useSchoolsStore } from './stores/schools'
 import { useSaveStore } from './stores/save'
 import ModalElement from './components/Modals/modalElement.vue'
 import StoryLineModal from './components/Modals/storyLineModal.vue'
+import { useApprenticeCastStore } from './stores/apprenticeCast.ts'
 const appStore = useAppStore()
 const boucleManagerStore = useBoucleManagerStore()
 const builderStore = useBuilderStore()
@@ -21,6 +22,7 @@ const unlockStore = useUnlockStore()
 const wizardStore = useWizardStore()
 const schoolsStore = useSchoolsStore()
 const saveStore = useSaveStore()
+const apprenticeCast=useApprenticeCastStore()
 const storyLineStore = useStoryLineStore()
 watch(
   () => appStore.ready,
@@ -47,6 +49,7 @@ Promise.all([
   unlockStore.init(),
   schoolsStore.init(),
   boucleManagerStore.init(),
+  apprenticeCast.init(),
 ]).then(() => {
   appStore.ready = true
 })

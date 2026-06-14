@@ -101,7 +101,7 @@ export const useSaveStore = defineStore('UseSave', () => {
         name: el.name,
         currentXp: el.currentXp,
         level: el.level,
-        numberOfapprentice: el.numberOfapprentice,
+        numberOfResearcher: el.numberOfResearcher,
       })),
       actions: schoolsStore.actionsSchool,
     }
@@ -119,7 +119,7 @@ export const useSaveStore = defineStore('UseSave', () => {
           name: el.name,
           currentXp: el.currentXp,
           level: el.level,
-          numberOfapprentice: el.numberOfapprentice,
+          numberOfResearcher: el.numberOfResearcher,
         })),
         actions: schoolsStore.actionsSchool,
       }),
@@ -199,7 +199,19 @@ export const useSaveStore = defineStore('UseSave', () => {
 
     wizardStore.ressources = JSON.parse(JSON.stringify(saveRessources!.current))
     wizardStore.startingRessources = JSON.parse(JSON.stringify(saveRessources!.starting))
-    wizardStore.buffs = saveBuffs!
+    saveBuffs!.forEach((buff) =>{
+      const buffObj = schoolsStore.buffsList.find((b) => b.name === buff.name)
+      if (buffObj?.buff) {
+        const newBuff:Buff={
+          duration:buff.duration,
+          name:buff.name,
+          unique:buff.unique,
+          effects:buffObj.buff.effects
+
+        }
+        wizardStore.buffs.push(newBuff)
+      }
+    })
     unlockStore.unlocked = saveUnlocks!
     schoolsStore.setSchools(saveSchool!)
     wizardStore.storyProgress = saveStoryLine!
@@ -226,7 +238,7 @@ export const useSaveStore = defineStore('UseSave', () => {
           name: el.name,
           currentXp: el.currentXp,
           level: el.level,
-          numberOfapprentice: el.numberOfapprentice,
+          numberOfResearcher: el.numberOfResearcher,
         })),
         actions: schoolsStore.actionsSchool.map((el) => ({
           name: el.name,

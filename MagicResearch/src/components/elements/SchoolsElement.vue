@@ -2,12 +2,12 @@
   <div class="academy-wrapper">
     <header class="stats-grid">
       <div class="stat-box total">
-        <span class="label">Total Apprentis</span>
-        <span class="value">{{ apprenticeNumber }}</span>
+        <span class="label">Total Chercheurs</span>
+        <span class="value">{{ wizardStore.ressources.school.numberOfResearcher }}</span>
       </div>
       <div class="stat-box available">
         <span class="label">Disponibles</span>
-        <span class="value">{{ availableApprentice }}</span>
+        <span class="value">{{ availableResearcher }}</span>
       </div>
     </header>
 
@@ -44,9 +44,9 @@
             </td>
             <td data-label="Assignation">
               <div class="stepper">
-                <button class="step-btn minus" :disabled="school.numberOfapprentice <= 0" @click="schoolsStore.removeApprentice(school)">−</button>
-                <span class="step-value">{{ school.numberOfapprentice }}</span>
-                <button class="step-btn plus" :disabled="availableApprentice <= 0" @click="schoolsStore.addApprentice(school)">+</button>
+                <button class="step-btn minus" :disabled="school.numberOfResearcher <= 0" @click="schoolsStore.removeApprentice(school)">−</button>
+                <span class="step-value">{{ school.numberOfResearcher }}</span>
+                <button class="step-btn plus" :disabled="availableResearcher <= 0" @click="schoolsStore.addApprentice(school)">+</button>
               </div>
             </td>
           </tr>
@@ -59,9 +59,9 @@
           <div class="res-details">
             <span class="res-label">Occupation</span>
             <div class="res-info-row">
-              <span class="res-value">{{ availableApprentice }} <span class="res-sub">libres</span></span>
+              <span class="res-value">{{ availableResearcher }} <span class="res-sub">libres</span></span>
               <div class="res-mini-gauge">
-                <div class="res-fill available" :style="{ width: (availableApprentice / apprenticeNumber * 100) + '%' }"></div>
+                <div class="res-fill available" :style="{ width: (availableResearcher / researcherNumber * 100) + '%' }"></div>
               </div>
             </div>
           </div>
@@ -72,9 +72,9 @@
           <div class="res-details">
             <span class="res-label">Dortoirs</span>
             <div class="res-info-row">
-              <span class="res-value">{{ apprenticeNumber }} / {{ wizardStore.ressources.school.apprenticeCapacity }}</span>
+              <span class="res-value">{{ researcherNumber }} / {{ wizardStore.ressources.school.researcherCapacity }}</span>
               <div class="res-mini-gauge">
-                <div class="res-fill capacity" :style="{ width: (apprenticeNumber / wizardStore.ressources.school.apprenticeCapacity * 100) + '%' }"></div>
+                <div class="res-fill capacity" :style="{ width: (researcherNumber / wizardStore.ressources.school.researcherCapacity * 100) + '%' }"></div>
               </div>
             </div>
           </div>
@@ -83,8 +83,8 @@
         <div class="resource-item efficiency">
           <div class="res-icon">⚡</div>
           <div class="res-details">
-            <span class="res-label">Rendement</span>
-            <span class="res-value highlight">{{ wizardStore.ressources.school.xpByApprentice }} <span class="res-sub">XP/s</span></span>
+            <span class="res-label">Rendement </span>
+            <span class="res-value highlight"> {{ xpByApprentice}} <span class="res-sub">XP/s</span></span>
           </div>
         </div>
       </footer>
@@ -99,9 +99,9 @@
               <div class="hire-body">
                 <div class="hire-header">
                   <span class="hire-title">Recrutement</span>
-                  <span class="hire-badge">/ +1 Apprenti</span>
+                  <span class="hire-badge">/ +1 Chercheur</span>
                 </div>
-                <p class="hire-description">Embauchez un nouvel apprenti pour accélérer vos recherches magiques.</p>
+                <p class="hire-description">Embauchez un nouveau chercheur pour accélérer vos recherches magiques.</p>
                 <div class="hire-costs">
                   <CostActionElement :cost="hireActionInfo!.cost" ref="HireCostIsEnought" />
                 </div>
@@ -120,7 +120,7 @@
                   <buttonBuilding :id="'ResearchCabin'" />
                 </div>
                 <p class="building-description">
-                  Permet de recruter plus d'apprentis. <span class="effect-text">Apprentis max +1</span>
+                  Permet de recruter plus de chercheurs. <span class="effect-text">Chercheur max +1</span>
                 </p>
               </div>
               <div class="building-footer">
@@ -144,21 +144,23 @@ import CostActionElement from '../UI/CostActionElement.vue'
 import buttonBuilding from '../buttons/buttonBuilding.vue'
 import CostElement from '../UI/CostElement.vue'
 import { useUnlockStore } from '@/stores/unlock'
+import { useMathStore } from '@/stores/math'
 
 const wizardStore = useWizardStore()
 const schoolsStore = useSchoolsStore()
 const unlockStore = useUnlockStore()
-
+const mathStore = useMathStore()
+const xpByApprentice=computed(()=> mathStore.transformPercentage(wizardStore.ressources.school.xpByResearcher,wizardStore.ressources.multipliers.xpByResearcher))
 type HireType = InstanceType<typeof CostActionElement>
 const HireCostIsEnought = useTemplateRef<HireType>('HireCostIsEnought')
 
-const apprenticeNumber = computed(() => wizardStore.ressources.school.numberOfApprentice)
+const researcherNumber = computed(() => wizardStore.ressources.school.numberOfResearcher)
 const hireActionInfo = computed(() => schoolsStore.getActionSchoolInfo('hire'))
 
-const availableApprentice = computed(() => {
+const availableResearcher = computed(() => {
   return (
-    wizardStore.ressources.school.numberOfApprentice -
-    schoolsStore.schools.reduce((total, school) => total + school.numberOfapprentice, 0)
+    wizardStore.ressources.school.numberOfResearcher -
+    schoolsStore.schools.reduce((total, school) => total + school.numberOfResearcher, 0)
   )
 })
 
@@ -171,7 +173,7 @@ function hire() {
 }
 
 const HireIsAvailable = computed(() => {
-  return (wizardStore.ressources.school.numberOfApprentice < wizardStore.ressources.school.apprenticeCapacity) && HireCostIsEnought.value?.ressourceIsEnought
+  return (wizardStore.ressources.school.numberOfResearcher < wizardStore.ressources.school.researcherCapacity) && HireCostIsEnought.value?.ressourceIsEnought
 })
 </script>
 

@@ -11,11 +11,15 @@ export type BuildingId =
   | 'waterTank'
   | 'lumberYard'
   | 'ResearchCabin'
+  | 'ApprenticeDorms';
 
 
 export function getBuildingList(): Building[] {
   const wizardStore = useWizardStore()
   const mathStore = useMathStore()
+  function addValue(value:number,level:number, multiplier:number) {
+  return mathStore.transformPercentage((value * (level )), multiplier)
+}
   return [
     {
       name:"Puit de mana",
@@ -23,9 +27,9 @@ export function getBuildingList(): Building[] {
       levelMax:100,
       level:0,
       easings:'expo',
-      multiplier:0,
+      multiplier:100,
       effects:function (this:Building) {
-        wizardStore.ressources.production.prodmana+=(0.5 * this.level) * mathStore.transformPercentage(this.multiplier)
+        wizardStore.ressources.production.prodmana+= addValue(0.5,this.level,this.multiplier)
       },
       cost:[
         {
@@ -43,9 +47,9 @@ export function getBuildingList(): Building[] {
       levelMax:10,
       level:0,
       easings:'expo',
-      multiplier:0,
+      multiplier:100,
       effects:function (this:Building) {
-        wizardStore.ressources.production.prodwater+=(0.5 * this.level)
+        wizardStore.ressources.production.prodwater+=addValue(0.5,this.level,this.multiplier)
       },
       cost:[
         {
@@ -70,9 +74,9 @@ export function getBuildingList(): Building[] {
           coins:{minValue:100,maxValue:500000}
         }
       }],
-      multiplier:0,
+      multiplier:100,
       effects:function (this:Building) {
-        wizardStore.ressources.limits.manamax+=(100 * this.level)
+        wizardStore.ressources.limits.manamax+= addValue(100,this.level,this.multiplier)
       }
     },{
       name:'Entrepot',
@@ -88,10 +92,10 @@ export function getBuildingList(): Building[] {
           stone:{minValue:30,maxValue:20000}
         }
       }],
-      multiplier:0,
+      multiplier:100,
       effects:function (this:Building) {
-        wizardStore.ressources.limits.stonemax+=(400 * this.level)
-        wizardStore.ressources.limits.woodmax+=(400 * this.level)
+        wizardStore.ressources.limits.stonemax+=addValue(400,this.level,this.multiplier)
+        wizardStore.ressources.limits.woodmax+=addValue(400,this.level,this.multiplier)
       }
     },
     {
@@ -109,9 +113,9 @@ export function getBuildingList(): Building[] {
           wood:{minValue:300,maxValue:10000}
         }
       }],
-      multiplier:0,
+      multiplier:100,
       effects:function (this:Building) {
-        wizardStore.ressources.limits.watermax+=(400 * this.level)
+        wizardStore.ressources.limits.watermax+=addValue(400,this.level,this.multiplier)
       }
     },{
       name:'Scierie',
@@ -128,9 +132,9 @@ export function getBuildingList(): Building[] {
           wood:{minValue:25,maxValue:10000}
         }
       }],
-      multiplier:0,
+      multiplier:100,
       effects:function (this:Building) {
-        wizardStore.ressources.production.prodwood+=(1 * this.level)
+        wizardStore.ressources.production.prodwood+=addValue(1,this.level,this.multiplier)
       }
     },
     {
@@ -148,10 +152,32 @@ export function getBuildingList(): Building[] {
           wood:{minValue:320,maxValue:15000}
         }
       }],
-      multiplier:0,
+      multiplier:100,
       effects:function (this:Building) {
-        wizardStore.ressources.school.apprenticeCapacity+=(1 * this.level)
+        wizardStore.ressources.school.researcherCapacity+=addValue(1,this.level,this.multiplier)
       }
+    },{
+
+      name:'Dortoir pour apprentis',
+      id:'ApprenticeDorms',
+      levelMax:100,
+      level:0,
+      easings:'expo',
+      cost:[{
+        level:0,
+        cost:{
+
+          coins:{minValue:300,maxValue:500000},
+          stone:{minValue:240,maxValue:25000},
+          wood:{minValue:480,maxValue:15000}
+        }
+      }],
+      multiplier:100,
+      effects:function (this:Building) {
+        wizardStore.ressources.school.apprenticeCapacity+=addValue(1,this.level,this.multiplier)
+        wizardStore.ressources.school.numberOfApprentice+=addValue(1,this.level,this.multiplier)
+      }
+
     }
   ]
 

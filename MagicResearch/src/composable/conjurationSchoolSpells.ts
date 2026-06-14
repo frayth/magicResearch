@@ -24,6 +24,7 @@ export function useConjurationSchoolSpells(){
       buff:false,
       cooldown:0,
       currentCooldown:0,
+      apprenticeCastTime: 60000,
       description:"Convertit du mana en eau &water.value:+2&",
       effect(this:Spell){
         const spellIsCastable=SpellIsCastable(this)
@@ -41,6 +42,7 @@ export function useConjurationSchoolSpells(){
       buff:false,
       cooldown:0,
       currentCooldown:0,
+      apprenticeCastTime: 60000,
       description:"Convertit du mana en quelques pierre &stone.value:+5&",
       effect(this:Spell){
         const spellIsCastable=SpellIsCastable(this)
@@ -51,38 +53,6 @@ export function useConjurationSchoolSpells(){
       }
     }
   ]
-return spells
+  const buffsList:Spell[]=spells.filter((spell)=>spell.buff)
+return { spells,buffsList}
 }
-    // {
-    //   name:"Créer de l'eau",
-    //   id:"createWater",
-    //   level:1,
-    //   cost:20,
-    //   buff:{
-    //     timer:10000,
-    //     unique:true
-    //   },
-    //   cooldown:0,
-    //   effect(this:Spell){
-    //     const spellIsCastable=SpellIsCastable(this)
-    //     // const buff:Buff={
-    //     //   name:this.name,
-    //     //   duration:this.buff?this.buff.timer:0,
-    //     //   unique:this.buff?this.buff.unique:false,
-    //     //   effects:{
-    //     //     ressources:{
-    //     //       prodwater:1
-    //     //     },
-    //     //     multipliers:{
-    //     //       manualmana:2,
-    //     //       prodwater:100
-    //     //     }
-    //     //   }
-    //     // }
-    //     if(spellIsCastable){
-    //       wizardStore.removeResources("mana",this.cost)
-    //       // wizardStore.addBuff(buff)
-    //       wizardStore.addBonus("water",2)
-    //     }
-    //   }
-    // }

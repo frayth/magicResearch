@@ -12,10 +12,11 @@ export interface Spell {
   level: number
   cost: number
   description: string
-  buff: false | { timer: number; unique: boolean }
+  buff: false | { timer: number; unique: boolean ,effects: () => void }
   cooldown: number
   currentCooldown: number
-  effect: () => void
+  effect: () =>  void
+  apprenticeCastTime:number
 }
 export interface Unlock {
   name: UnlocksNames
@@ -28,7 +29,7 @@ export interface School {
   baseXp: number
   currentXp: number
   exponentielXp: number
-  numberOfapprentice: number
+  numberOfResearcher: number
   spells: Spell[]
 }
 
@@ -69,7 +70,7 @@ export type SaveBuildings = {
 }[]
 
 export type SaveSchools = {
-  schools: Pick<School, 'name' | 'currentXp' | 'level' | 'numberOfapprentice'>[]
+  schools: Pick<School, 'name' | 'currentXp' | 'level' | 'numberOfResearcher'>[]
   actions: {
     name: SchoolAction
     level: number
@@ -88,11 +89,10 @@ export interface StoryLine {
   name: string
   haveCost: boolean
   effects: () => void
-  trigger: () => void
   order: number
-  watchNextStory: () => WatchHandle
   completion: ComputedRef<boolean>
   buttonLabel: string
+  autocompletion:boolean
 }
 
 export type storyProgress = {
@@ -177,14 +177,18 @@ export type multipliersRessources = {
   woodmax: number
   stonemax: number
   coinsmax: number
-  xpByApprentice: number
-  apprenticeCapacity: number
+  xpByResearcher: number
+  researcherCapacity: number
+  numberOfResearcher: number
   numberOfApprentice: number
+  apprenticeCapacity: number
 }
 export type SchoolRessources = {
-  xpByApprentice: number
-  apprenticeCapacity: number
+  numberOfResearcher: number
+  xpByResearcher: number
+  researcherCapacity: number
   numberOfApprentice: number
+  apprenticeCapacity: number
 }
 export type BuildingWizard = {
   cost: Record<RessourcesKey, number>
@@ -193,4 +197,14 @@ export type BuildingWizard = {
   name: string
   effects: () => void
   levelMax: number
+}
+
+export type ConfigurationCastApprentice = {
+  spellId: string
+  apprenticeNumber: number
+}[]
+
+export type ConfigurationCastApprenticeData = {
+  name: string
+  configuration: ConfigurationCastApprentice
 }

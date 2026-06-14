@@ -32,7 +32,9 @@
 <script setup lang="ts">
 import { useAppStore } from '@/stores/app'
 import {useStoryLineStore} from '@/stores/storyLine'
-import { onMounted, ref } from 'vue'
+import {  computed, onMounted, ref} from 'vue'
+
+
 const questCompleted = ref(false)
 const appStore = useAppStore()
 const storyStore = useStoryLineStore()
@@ -41,7 +43,7 @@ const slideIndex = ref(0)
 const textArray=ref(appStore.storyLineModal!.storyData?.text.map((text) => text))
 const endText = ref(appStore.storyLineModal!.storyData?.ending.map((text) => text))
 const unlockText = ref(appStore.storyLineModal!.storyData?.unlock)
-const conditionIsTrue = appStore.storyLineModal?.story?.completion
+const conditionIsTrue = computed(() => appStore.storyLineModal?.story?.completion?.value)
 function init() {
   slideIndex.value = 0
   questCompleted.value = false
@@ -51,8 +53,8 @@ function init() {
 }
 
 function close() {
-  console.log('close')
-  if(appStore.storyModalHasHistory && questCompleted.value ){
+
+  if(questCompleted.value){
     appStore.nextStoryline()
     appStore.triggerStoryLineModal()
     init()
@@ -70,7 +72,6 @@ function incrementSlide() {
   }
 }
 function valideQuest() {
-  console.log(conditionIsTrue)
   if (conditionIsTrue?.value) {
     questCompleted.value = true
     storyStore.validateCurrentStory()
@@ -78,6 +79,10 @@ function valideQuest() {
 }
 onMounted(() => {
   init()
+  if(storyStore.currentStory?.autocompletion) {
+    valideQuest()
+  }
+
 })
 </script>
 <style scoped>

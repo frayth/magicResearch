@@ -35,6 +35,38 @@ const storyLineData: StoryLineData[] = [
       'Tu réfléchis à ses paroles pendant un moment. Indépendamment de ses sentiments, tu réalises que doubler le nombre de chercheurs pourrait grandement accélérer les choses. Tu envisages de construire une cabane pour chercheurs comme elle l’a suggéré et d’embaucher un chercheur supplémentaire.'
     ],
     unlock: 'Tu peux maintenant construire une chambre pour chercheurs !'
+  },
+    {
+    id: 'story3',
+    text: [['Continue tes recherches...']],
+    ending: ['Combien de fois as-tu lancé un sort manuellement jusqu’à présent ? Tu as perdu le compte. Ce n’est certainement pas difficile pour toi. Cependant, il y a une vraie répétition dans ces lancements.',
+      'Tu te demandes s’il n’y aurait pas un moyen d’automatiser ça d’une manière ou d’une autre, car ça commence à devenir un peu lassant. Mais en y réfléchissant, tu n’arrives pas à trouver de solution…',
+    ],
+    unlock: ''
+  },
+  {
+
+    id: 'story4',
+    text: [['« C’est un honneur de vous rencontrer, directeur », s’exclame l’apprenti en s’inclinant devant vous un peu trop profondément.',
+      'La chercheuse poursuit : « Ce serait formidable qu’il reste ici ! Il pourrait vous aider à lancer des sorts et continuer à améliorer notre campus. D’ailleurs, une institution magique n’a aucun sens sans des gens désireux d’apprendre. Qu’en pensez-vous ? » vous demande-t-elle.',
+      'Vous vous rappelez à quel point il était fastidieux de lancer des sorts. Cela pourrait être d’une grande aide !']],
+    ending: ['« Il y a juste un petit problème, poursuit la chercheuse : il n’y a nulle part où il puisse dormir ! Il va falloir construire quelque chose. »',
+      'Vous l’aviez vu venir. Pourtant, vous avez hâte — vous en avez assez de lancer Créer un caillou manuellement. Vous rassurez la chercheuse et son cousin en leur disant que vous allez y réfléchir, puis vous vous éloignez, commençant à imaginer ce qu’il vous faudrait pour construire un logement adapté à votre premier apprenti.'
+    ],
+    unlock: 'Vous pouvez désormais construire des dortoirs pour apprentis!'
+
+  },{
+    id: 'story5',
+    text: [['',
+      '',
+      '']],
+    ending: ['La construction du premier dortoir pour apprentis est terminée ! Tu célèbres cela devant un petit public. Tu remarques que l’apprenti d’avant est toujours là. Tu t’approches de lui, bien qu’il semble encore craintif et s’incline profondément.',
+      '« C’est… un logement que je pourrais utiliser ? » dit-il d’une voix timide. Tu acquiesces et lui demandes s’il aimerait devenir ton premier apprenti. Il tremble, visiblement et clairement nerveux.',
+      '« Ce serait formidable… C-c’est un honneur de pouvoir apprendre auprès de quelqu’un comme vous, maître. Je vais emménager tout de suite. »'
+    ],
+    unlock: 'Vous avez débloqué les apprentis ! Les apprentis peuvent lancer automatiquement des sorts pour vous après un certain temps. Vous pouvez les gérer dans la section des apprentis !'
+
+
   }
 ]
 export default storyLineData

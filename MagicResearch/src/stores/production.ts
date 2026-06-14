@@ -75,16 +75,17 @@ export const useProductionStore = defineStore('production', () => {
     for( const [key, value] of Object.entries(wizardStore.ressources.incremental)) {
       const incrementalRessources=["mana","water","stone","coins","wood"]
       if(incrementalRessources.includes(key)){
+
         switch(key){
-          case "mana":wizardStore.ressources.incremental.mana+=wizardStore.ressources.production.prodmana* mathStore.transformPercentage(wizardStore.ressources.multipliers.prodmana) / mathStore.RatioTimer()
+          case "mana":wizardStore.ressources.incremental.mana+= mathStore.transformPercentage(wizardStore.ressources.production.prodmana,wizardStore.ressources.multipliers.prodmana) / mathStore.RatioTimer()
           break;
-          case "water":wizardStore.ressources.incremental.water+=wizardStore.ressources.production.prodwater* mathStore.transformPercentage(wizardStore.ressources.multipliers.prodwater) / mathStore.RatioTimer()
+          case "water":wizardStore.ressources.incremental.water+=mathStore.transformPercentage(wizardStore.ressources.production.prodwater,wizardStore.ressources.multipliers.prodwater) / mathStore.RatioTimer()
           break;
-          case "stone":wizardStore.ressources.incremental.stone+=wizardStore.ressources.production.prodstone* mathStore.transformPercentage(wizardStore.ressources.multipliers.prodstone) / mathStore.RatioTimer()
+          case "stone":wizardStore.ressources.incremental.stone+= mathStore.transformPercentage(wizardStore.ressources.production.prodstone,wizardStore.ressources.multipliers.prodstone) / mathStore.RatioTimer()
           break;
-          case "coins":wizardStore.ressources.incremental.coins+=wizardStore.ressources.production.prodcoins* mathStore.transformPercentage(wizardStore.ressources.multipliers.prodcoins) / mathStore.RatioTimer()
+          case "coins":wizardStore.ressources.incremental.coins+= mathStore.transformPercentage(wizardStore.ressources.production.prodcoins,wizardStore.ressources.multipliers.prodcoins) / mathStore.RatioTimer()
           break;
-          case "wood":wizardStore.ressources.incremental.wood+=wizardStore.ressources.production.prodwood* mathStore.transformPercentage(wizardStore.ressources.multipliers.prodwood) / mathStore.RatioTimer()
+          case "wood":wizardStore.ressources.incremental.wood+= mathStore.transformPercentage(wizardStore.ressources.production.prodwood,wizardStore.ressources.multipliers.prodwood) / mathStore.RatioTimer()
           break;
         }
       }

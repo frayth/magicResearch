@@ -28,7 +28,7 @@ const htmlRefHook = useTemplateRef('buttonProd')
 const longPressedHook = shallowRef(false)
 const intervalHook = shallowRef<number>()
 const value = computed(() => {
-  return wizardStore.ressources.manual[`manual${props.name}` as keyof typeof wizardStore.ressources.manual] * mathStore.transformPercentage(wizardStore.ressources.multipliers[`manual${props.name}` as keyof multipliersRessources])
+  return  mathStore.transformPercentage(wizardStore.ressources.manual[`manual${props.name}` as keyof typeof wizardStore.ressources.manual],wizardStore.ressources.multipliers[`manual${props.name}` as keyof multipliersRessources])
 })
 function onLongPressCallbackHook() {
   longPressedHook.value = true

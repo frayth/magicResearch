@@ -10,20 +10,24 @@ import { formatTime } from '@/composable/formatShowedValue'
 import { getsSchoolActions,type SchoolAction } from '@/data/schools.data'
 import { useValueByLevel } from '@/composable/UseValueByLevel'
 
+
 export const useSchoolsStore = defineStore('schools', () => {
   const conjurationSchoolSpells = useConjurationSchoolSpells()
   const illusionSchoolSpells = useIllusionSchoolSpells()
   const enchantementSchoolSpells = useEnchantementSchoolSpells()
   const wizardStore = useWizardStore()
   const math = useMathStore()
+  const buffsList = computed(() => {
+    return [...illusionSchoolSpells.buffsList, ...enchantementSchoolSpells.buffsList, ...conjurationSchoolSpells.buffsList]
+  })
   const illusionSchools = reactive<School>({
     name: 'illusion',
-    level: 1,
+    level: 10,
     baseXp: 100,
     currentXp: 0,
     exponentielXp: 2,
-    numberOfapprentice: 0,
-    spells: illusionSchoolSpells.map((spell) => spell),
+    numberOfResearcher: 0,
+    spells: illusionSchoolSpells.spells.map((spell) => spell),
   })
   const actionsSchool: { name: SchoolAction; level: number }[] = getsSchoolActions().map((action) => {
     return {
@@ -37,8 +41,8 @@ export const useSchoolsStore = defineStore('schools', () => {
     baseXp: 100,
     currentXp: 0,
     exponentielXp: 2,
-    numberOfapprentice: 0,
-    spells: enchantementSchoolSpells.map((spell) => spell),
+    numberOfResearcher: 0,
+    spells: enchantementSchoolSpells.spells.map((spell) => spell),
   })
   const conjurationSchools = reactive<School>({
     name: 'conjuration',
@@ -46,8 +50,8 @@ export const useSchoolsStore = defineStore('schools', () => {
     baseXp: 100,
     currentXp: 0,
     exponentielXp: 2,
-    numberOfapprentice: 0,
-    spells: conjurationSchoolSpells.map((spell) => spell),
+    numberOfResearcher: 0,
+    spells: conjurationSchoolSpells.spells.map((spell) => spell),
   })
 
   const schools = ref<School[]>([illusionSchools, enchantementSchools, conjurationSchools])
@@ -71,8 +75,7 @@ export const useSchoolsStore = defineStore('schools', () => {
   function updateSchools(interval: number) {
     schools.value.forEach((school) => {
       school.currentXp +=
-        (wizardStore.ressources.school.xpByApprentice *
-          school.numberOfapprentice )
+        ( math.transformPercentage(wizardStore.ressources.school.xpByResearcher,wizardStore.ressources.multipliers.xpByResearcher) / math.RatioTimer()) * school.numberOfResearcher
       if (school.currentXp >= getNextLevelXp(school)) {
         school.level++
         school.currentXp = 0
@@ -88,11 +91,12 @@ export const useSchoolsStore = defineStore('schools', () => {
     })
   }
   function addApprentice(school: School) {
-    school.numberOfapprentice++
+    school.numberOfResearcher++
   }
   function removeApprentice(school: School) {
-    school.numberOfapprentice--
+    school.numberOfResearcher--
   }
+
   function castSpell(spell: Spell) {
     if (spell.currentCooldown > 0) {
       console.error('spell is on cooldown')
@@ -101,11 +105,12 @@ export const useSchoolsStore = defineStore('schools', () => {
     spell.currentCooldown = spell.cooldown
     spell.effect()
   }
+
   function timeForLevelUp(school: School) {
     const xpMax = getNextLevelXp(school)
     const deltaXp = xpMax - school.currentXp
     const timeForLevelUp =
-      deltaXp / (school.numberOfapprentice * wizardStore.ressources.school.xpByApprentice)
+      deltaXp / (school.numberOfResearcher * math.transformPercentage(wizardStore.ressources.school.xpByResearcher,wizardStore.ressources.multipliers.xpByResearcher) )
 
     if (timeForLevelUp === Infinity) {
       return '∞'
@@ -113,23 +118,26 @@ export const useSchoolsStore = defineStore('schools', () => {
       return formatTime(timeForLevelUp)
     }
   }
+
   function setSchools(saveSchool:SaveSchools){
     schools.value.forEach(school=>{
       const currentSchool = saveSchool.schools.find(s=>s.name === school.name)
       if (currentSchool) {
         school.level = currentSchool.level
         school.currentXp = currentSchool.currentXp
-        school.numberOfapprentice = currentSchool.numberOfapprentice
+        school.numberOfResearcher = currentSchool.numberOfResearcher
       }
     })
   }
+
   function reset(){
     schools.value.forEach(school=>{
       school.level = 1
       school.currentXp = 0
-      school.numberOfapprentice = 0
+      school.numberOfResearcher = 0
     })
   }
+
   function getActionSchoolInfo(name: SchoolAction):{action:SchoolAction, level:number,cost:Record<keyof IncrementalRessources, ReturnType<typeof useValueByLevel>>}|undefined {
     const action=getsSchoolActions().find(action => action.name === name)
     if (!action) return undefined
@@ -145,10 +153,11 @@ export const useSchoolsStore = defineStore('schools', () => {
       cost
     }
   }
+
   function hireApprentice(){
     const action=actionsSchool.find(action => action.name === 'hire')
     const infoAction = getsSchoolActions().find(action => action.name === 'hire')
-    const haveEnoughtCapacity = wizardStore.ressources.school.numberOfApprentice < wizardStore.ressources.school.apprenticeCapacity
+    const haveEnoughtCapacity = wizardStore.ressources.school.numberOfApprentice < wizardStore.ressources.school.researcherCapacity
     if(!action || !infoAction ){
       console.error('action \'hire\' not found' )
       return
@@ -184,6 +193,7 @@ export const useSchoolsStore = defineStore('schools', () => {
     reset,
     actionsSchool,
     getActionSchoolInfo,
-    hireApprentice
+    hireApprentice,
+    buffsList
   }
 })

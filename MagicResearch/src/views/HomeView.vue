@@ -9,12 +9,12 @@ import BuildingElement from '@/components/elements/BuildingElement.vue'
 import ManaBar from '@/components/UI/ManaBar.vue'
 import { useSaveStore } from '@/stores/save'
 import { useUnlockStore } from '@/stores/unlock'
-import { computed } from 'vue'
+import ApprenticeCast from '@/components/elements/ApprenticeCast.vue'
 
 const wizardStore = useWizardStore()
 const saveStore = useSaveStore()
 const unlockStore = useUnlockStore()
-
+//v-if="unlockStore.checkUnlockStatus('apprentices')"
 </script>
 
 <template>
@@ -37,6 +37,7 @@ const unlockStore = useUnlockStore()
     <SchoolsElement v-if="unlockStore.checkUnlockStatus('Researcher')" />
     <MagicElement />
     <EventElement />
+    <ApprenticeCast  />
   </main>
 </template>
 <style scoped>

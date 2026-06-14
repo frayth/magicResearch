@@ -7,7 +7,7 @@ import { useValueByLevel } from '../composable/UseValueByLevel'
 export const useBuildingsStore = defineStore('buildings', () => {
   const wizardStore = useWizardStore()
 
-  const buildingsList = ref(getBuildingList()) //<Omit<Building,'level'>[]>
+  const buildingsList = ref(getBuildingList())
 
   const wizardBuildings = ref<Building[]>([])
 
@@ -47,7 +47,7 @@ export const useBuildingsStore = defineStore('buildings', () => {
 
   function resetMultipliers() {
     wizardBuildings.value.forEach((building) => {
-      building.multiplier = 0
+      building.multiplier = 100
     })
   }
   function getBuilding(id: BuildingId, level: number): BuildingWizard | null {
@@ -118,6 +118,7 @@ export const useBuildingsStore = defineStore('buildings', () => {
     resetMultipliers,
     getBuilding,
     reset,
-    upgradeBuilding
+    upgradeBuilding,
+    buildingsList
   }
 })

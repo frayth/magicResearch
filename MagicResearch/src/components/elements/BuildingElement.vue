@@ -73,11 +73,16 @@
   </div>
   <div>
     <h2>Ammenagement</h2>
-    <div v-if="unlockStore.checkUnlockStatus('cabinResearcher')">
-      <ButtonBuilding id="ResearchCabin" />
-      <div> Permet de recruter plus d'apprentis. <span class="effect-text">Apprentis max +1</span></div>
-      <CostElement id="ResearchCabin" />
-    </div>
+      <div v-if="unlockStore.checkUnlockStatus('cabinResearcher')">
+        <ButtonBuilding id="ResearchCabin" />
+        <div> Permet de recruter plus de chercheurs. <span class="effect-text">Chercheur max +1</span></div>
+        <CostElement id="ResearchCabin" />
+      </div>
+      <div v-if="unlockStore.checkUnlockStatus('apprenticeDorm')">
+        <ButtonBuilding id="ApprenticeDorms" />
+        <div> Permet de recruter plus d'apprentis. <span class="effect-text">Apprenti max +1</span></div>
+        <CostElement id="ApprenticeDorms" />
+      </div>
   </div>
 </template>
 

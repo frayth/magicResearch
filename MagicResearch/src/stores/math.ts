@@ -2,8 +2,8 @@ import { defineStore } from 'pinia'
 import { useBoucleManagerStore } from './boucleManager'
 export const useMathStore = defineStore('math', () => {
   const boucleManagerStore = useBoucleManagerStore()
-  function transformPercentage(percentage: number) {
-    return 1 + percentage / 100
+  function transformPercentage(value:number,percentage: number) {
+    return value * (percentage / 100)
   }
   function RatioTimer() {
     return 1000 / boucleManagerStore.interval

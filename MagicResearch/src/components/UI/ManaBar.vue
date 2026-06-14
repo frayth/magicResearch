@@ -6,7 +6,7 @@
         <span class="label-text">Mana Astral</span>
       </div>
       <span class="mana-stats">
-        {{ wizardStore.ressources.production.prodmana }}<small>/s</small>
+        {{  mathStore.transformPercentage(wizardStore.ressources.production.prodmana,wizardStore.ressources.multipliers.prodmana) }}<small>/s</small>
       </span>
     </div>
 
@@ -19,7 +19,7 @@
       </div>
 
       <div class="mana-values">
-        <span class="current">{{ formatShowedValue(wizardStore.ressources.incremental.mana)  }}</span>
+        <span class="current">{{ formatShowedValue(wizardStore.ressources.incremental.mana) }}</span>
         <span class="separator">/</span>
         <span class="max">{{ formatShowedValue(wizardStore.ressources.limits.manamax) }}</span>
       </div>
@@ -31,7 +31,11 @@
 import RichText from './RichText.vue';
 import { useWizardStore } from '@/stores/wizard';
 import { formatShowedValue } from '@/composable/formatShowedValue';
+import { useMathStore } from '@/stores/math';
+
 const wizardStore = useWizardStore();
+const mathStore = useMathStore();
+
 
 </script>
 

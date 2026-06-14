@@ -9,7 +9,7 @@ export function useEnchantementSchoolSpells() {
   const schoolsStore = useSchoolsStore()
   const buildingsStore = useBuildingsStore()
   function SpellIsCastable(spell: Spell) {
-    if (spell.level > schoolsStore.conjurationSchools.level) {
+    if (spell.level > schoolsStore.enchantementSchools.level) {
       console.error('spell level too high')
       return false
     }
@@ -25,9 +25,16 @@ export function useEnchantementSchoolSpells() {
       id: 'enchantementDuPuitDeMana',
       level: 1,
       cost: 60,
+      apprenticeCastTime: 60000,
       buff: {
         timer: 30000,
         unique: true,
+        effects:()=>{
+          const puitDeMana = buildingsStore.wizardBuildings.find((building) => building.id === 'puitDeMana')
+          if (puitDeMana) {
+            puitDeMana.multiplier += 100
+          }
+        },
       },
       cooldown: 0,
       currentCooldown: 0,
@@ -35,23 +42,19 @@ export function useEnchantementSchoolSpells() {
         'Altere un puit de mana pour produire plus de mana pour un temps limité. &mana.value:*2&',
       effect(this: Spell) {
         const spellIsCastable = SpellIsCastable(this)
-        const buff: Buff = {
+        const currentBuff: Buff = {
           name: this.name,
           duration: this.buff ? this.buff.timer : 0,
           unique: this.buff ? this.buff.unique : false,
-          effects:()=>{
-            const puitDeMana = buildingsStore.wizardBuildings.find((building) => building.id === 'puitDeMana')
-            if (puitDeMana) {
-              puitDeMana.multiplier += 100
-            }
-          },
+          effects:this.buff? this.buff.effects : () => {},
         }
         if (spellIsCastable) {
-          wizardStore.removeResources('mana', this.cost)
-          wizardStore.addBuff(buff)
+            wizardStore.removeResources('mana', this.cost)
+            wizardStore.addBuff(currentBuff)
         }
       },
     },
   ]
-  return spells
+  const buffsList:Spell[]=spells.filter((spell)=>spell.buff)
+  return {spells,buffsList}
 }

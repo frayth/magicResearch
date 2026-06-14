@@ -5,7 +5,7 @@
       <div
         v-if="storyLineStore.currentStory"
         class="quest-item main-quest"
-        @click="storyLineStore.currentStory?.trigger()"
+        @click="storyLineStore.setUpStoryModal()"
       >
         <div class="quest-icon">✦</div>
         <div class="quest-info">
@@ -38,7 +38,9 @@
 
 <script setup lang="ts">
 import {useStoryLineStore} from '@/stores/storyLine'
+
 const storyLineStore = useStoryLineStore()
+
 </script>
 
 <style scoped>

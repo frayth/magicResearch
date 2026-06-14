@@ -32,6 +32,7 @@ const buttonValue = ref('Compris')
 const currentSlide=ref(1)
 const numberOfSlides=ref(1)
 const imgBackground = ref('')
+
 provide<Ref<string>>('buttonValue', buttonValue)
 provide<Ref<number>>('currentSlide', currentSlide)
 provide<Ref<number>>('numberOfSlides', numberOfSlides)

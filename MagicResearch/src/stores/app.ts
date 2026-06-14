@@ -36,9 +36,23 @@ function triggerStoryLineModal() {
   }
   function reset() {
     messagesModal.value = messagesModal.value[0] ? [messagesModal.value[0]] : []
+    storyLineModal.value = {
+      show: false,
+      story: null,
+      storyData:null,
+      history: []
+    }
   }
   function nextStoryline() {
-    if(storyLineModal.value.history.length === 0) return
+    if(storyLineModal.value.history.length === 0) {
+      storyLineModal.value={
+        show: false,
+        story: null,
+        storyData:null,
+        history: []
+      }
+      return
+    }
     const nextStory = storyLineModal.value.history.shift()
     if(nextStory) {
       storyLineModal.value.story = nextStory.story
