@@ -5,10 +5,30 @@ import type { UnlocksNames } from '../data/unlocks.data'
 import type { EasingType } from '@/composable/UseValueByLevel'
 import type { ComputedRef, WatchHandle } from 'vue'
 import type { SchoolAction } from '@/data/schools.data'
-
+type Elements = 'water' | 'earth' | 'fire' | 'air' | 'light' | 'dark' |'none'
+export type CharactersStatistics ={
+  life:number,
+  maxLife:number
+  damage:number
+  agility:number,
+  strength:number,
+  intelligence:number
+  luck:number
+  regenHp:number
+}
+export interface Item {
+  name:string
+  id:number
+  effects:()=>void
+  imageUrl:string,
+  description:string
+  available:ComputedRef<boolean>
+}
+export type CharactersStatisticsKeys = keyof CharactersStatistics
 export interface Spell {
   name: string
   id: string
+  type:Elements
   level: number
   cost: number
   description: string
@@ -37,8 +57,10 @@ export interface Building {
   name: string
   id: BuildingId
   level: number
+  currentlevel:number
   levelMax: number
   easings: EasingType
+  evolutif:boolean
   multiplier: number
   effects: (this: Building) => void
   cost: {
@@ -67,6 +89,7 @@ export type SaveRessources = {
 export type SaveBuildings = {
   id: BuildingId
   level: number
+  currentLevel:number
 }[]
 
 export type SaveSchools = {
@@ -93,8 +116,13 @@ export interface StoryLine {
   completion: ComputedRef<boolean>
   buttonLabel: string
   autocompletion:boolean
+  completionRate?:ComputedRef<StorylineCompletionRate>
 }
-
+export type StorylineCompletionRate = {
+  element: string,
+  goal:number,
+  current:number,
+}[]
 export type storyProgress = {
   progress: number
   completed: boolean
@@ -126,8 +154,12 @@ export type SaveKeys = {
   unlockKey: string
   buffKey: string
   storyLineKey: string
+  apprenticeKey: string
 }
-
+export type SaveApprenticeCast = {
+  actualConfiguration: ConfigurationCastApprentice
+  configurations: ConfigurationCastApprenticeData[]
+}
 export type Ressources = {
   incremental: IncrementalRessources
   production: productionRessources
@@ -143,6 +175,8 @@ export type IncrementalRessources = {
   wood: number
   coins: number
   stone: number
+  ironOre:number
+  fire:number
 }
 export type productionRessources = {
   prodmana: number
@@ -150,6 +184,8 @@ export type productionRessources = {
   prodwood: number
   prodcoins: number
   prodstone: number
+  prodironOre: number
+  prodfire: number
 }
 export type limitsRessources = {
   manamax: number
@@ -157,22 +193,29 @@ export type limitsRessources = {
   woodmax: number
   stonemax: number
   coinsmax: number
+  ironOremax: number
+  firemax: number
 }
 export type manualRessources = {
   manualmana: number
   manualwater: number
   manualwood: number
+  manualironOre: number
 }
 export type multipliersRessources = {
   prodmana: number
   prodwater: number
   prodwood: number
+  prodfire: number
   prodcoins: number
   prodstone: number
+  prodironOre: number
   manualmana: number
   manualwater: number
+  manualironOre: number
   manualwood: number
   manamax: number
+  firemax: number
   watermax: number
   woodmax: number
   stonemax: number
@@ -207,4 +250,28 @@ export type ConfigurationCastApprentice = {
 export type ConfigurationCastApprenticeData = {
   name: string
   configuration: ConfigurationCastApprentice
+}
+export type EventTypes= UnlockEvent | EventEvent
+export type UnlockEvent = {
+  type: "unlock"
+  name:UnlocksNames
+  title:string
+  text:string[]
+  unlock:string
+  button:string
+}
+export type EventEvent = {
+  type: "event"
+  name:string
+  text:string[]
+  button:string
+}
+
+export type Entitie = {
+  stats: CharactersStatistics
+  alive:ComputedRef<boolean>
+  name:string
+  id:string
+
+
 }

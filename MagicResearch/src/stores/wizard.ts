@@ -1,7 +1,8 @@
 import { defineStore, storeToRefs } from 'pinia'
-import { ref, computed, watchEffect, watch, effect } from 'vue'
+import { ref, computed, watchEffect, watch, effect, reactive } from 'vue'
 import { useBuildingsStore } from './buildings'
 import { useSaveStore } from './save'
+import { getWizardDefaultStatistics } from '@/data/defaultValue.data'
 import type {
   Buff,
   Spell,
@@ -10,7 +11,8 @@ import type {
   Ressources,
 } from '@/types/ressources'
 import type { BuildingId } from '@/data/buildings.data'
-import { defaultRessource, getDefaultRessource } from '@/data/defaultValue.data'
+import {  getDefaultRessource } from '@/data/defaultValue.data'
+import { Entity } from '@/Class/Entity'
 
 export const useWizardStore = defineStore('wizard', () => {
   const buildingsStore = useBuildingsStore()
@@ -19,7 +21,7 @@ export const useWizardStore = defineStore('wizard', () => {
   const buffs = ref<Buff[]>([])
   const storyProgress = ref<storyProgress>({ progress: 0, completed: false })
   const ressources = ref<Ressources>(getDefaultRessource())
-
+  const wizardEntity=reactive(new Entity(getWizardDefaultStatistics()))
   const startingRessources = ref<Ressources>(getDefaultRessource())
 
 
@@ -96,8 +98,8 @@ export const useWizardStore = defineStore('wizard', () => {
   function reset() {
     console.log('reset wizard')
     buffs.value = []
-    ressources.value =defaultRessource
-    startingRessources.value = defaultRessource
+    ressources.value = getDefaultRessource()
+    startingRessources.value = getDefaultRessource()
     ressourcesNeedToBeUpdated.value = true
     storyProgress.value = { progress: 0, completed: false }
   }
@@ -115,5 +117,6 @@ export const useWizardStore = defineStore('wizard', () => {
     storyProgress,
     ressources,
     startingRessources,
+    wizardEntity
   }
 })

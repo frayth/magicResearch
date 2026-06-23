@@ -10,7 +10,7 @@ import { useWizardStore } from './stores/wizard'
 import { useStoryLineStore } from './stores/storyLine'
 import { useSchoolsStore } from './stores/schools'
 import { useSaveStore } from './stores/save'
-import ModalElement from './components/Modals/modalElement.vue'
+import EventModal from './components/Modals/EventModal.vue'
 import StoryLineModal from './components/Modals/storyLineModal.vue'
 import { useApprenticeCastStore } from './stores/apprenticeCast.ts'
 const appStore = useAppStore()
@@ -57,7 +57,7 @@ Promise.all([
 </script>
 
 <template>
-  <ModalElement v-if="appStore.modalIsShow" />
+  <EventModal  />
   <StoryLineModal v-if="appStore.storyLineModal?.show " />
   <RouterView />
 </template>

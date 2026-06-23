@@ -15,13 +15,13 @@ export const useStoryLineStore = defineStore('storyLine', () => {
   const schoolsStore = useSchoolsStore()
   const buildingsStore = useBuildingsStore()
   const checkStoryTrigger = (
-    coins: number,
-    eclatlevel: number | undefined,
-    apprenticeDormsLevel: number | undefined,
+    // coins: number,
+    // eclatlevel: number | undefined,
+    // apprenticeDormsLevel: number | undefined,
   ) => {
 
     // Story 1 :  Passer eclat de mana au niveau 1
-    if (wizardStore.storyProgress.progress === 0 && eclatlevel === 1) {
+    if (wizardStore.storyProgress.progress === 0 && buildingsStore.wizardBuildings.find((b) => b.id === 'eclatdemana')?.level === 1) {
       const storyToAffect = storyLine.find((story) => story.id === 'story1')
       if (storyToAffect) {
         setCurrentStoryLine(storyToAffect)
@@ -31,7 +31,7 @@ export const useStoryLineStore = defineStore('storyLine', () => {
       }
     }
 
-    if(wizardStore.storyProgress.progress === 4 && wizardStore.storyProgress.completed && apprenticeDormsLevel === 1){
+    if(wizardStore.storyProgress.progress === 4 && wizardStore.storyProgress.completed &&  buildingsStore.wizardBuildings.find((b) => b.id === 'ApprenticeDorms')?.level === 1){
       const storyToAffect = storyLine.find((story) => story.id === 'story5')
       if (storyToAffect) {
         console.log('Story 5 triggered')
@@ -41,20 +41,18 @@ export const useStoryLineStore = defineStore('storyLine', () => {
         console.error('Story 5 not found')
       }
     }
+    if(wizardStore.storyProgress.progress === 7 && wizardStore.storyProgress.completed && unlockStore.checkUnlockStatus('ironOre') && wizardStore.ressources?.incremental?.ironOre >= 10 ) {
+      const storyToAffect = storyLine.find((story) => story.id === 'story8')
+      if (storyToAffect) {
+        console.log('Story 8 triggered')
+        setCurrentStoryLine(storyToAffect)
+        setUpStoryModal()
+      } else {
+        console.error('Story 8 not found')
+      }
+    }
   }
 
-  watch(
-    [
-      //Ressources
-      () => wizardStore.ressources?.incremental?.coins,
-      //Buildings
-      () => buildingsStore.wizardBuildings.find((b) => b.id === 'eclatdemana')?.level,
-      () => buildingsStore.wizardBuildings.find((b) => b.id === 'ApprenticeDorms')?.level,
-    ],
-    ([coins, eclatlevel, apprenticeDormsLevel]) => {
-      checkStoryTrigger(0, eclatlevel, apprenticeDormsLevel)
-    },
-  )
 
   const storyLine: StoryLine[] = [
     {
@@ -73,6 +71,15 @@ export const useStoryLineStore = defineStore('storyLine', () => {
         return wizardStore.ressources.incremental.coins >= 200
       }),
       autocompletion: false,
+      completionRate:computed(() => {
+        return [
+          {
+            element: 'Piéces',
+            goal: 200,
+            current: wizardStore.ressources.incremental.coins,
+          }
+        ]
+      })
     },
     {
       id: 'story2',
@@ -89,6 +96,15 @@ export const useStoryLineStore = defineStore('storyLine', () => {
         return schoolsStore.schools.some((school) => school.level >= 2)
       }),
       autocompletion: false,
+      completionRate:computed(() => {
+        return [
+          {
+            element: 'Level école la plus élevée',
+            goal: 2,
+            current: schoolsStore.schools.reduce((curr,acc) => curr.level > acc.level ? curr : acc).level
+          }
+        ]
+      })
     },
     {
       id: 'story3',
@@ -104,6 +120,15 @@ export const useStoryLineStore = defineStore('storyLine', () => {
         return schoolsStore.schools.reduce((acc, school) => acc + school.level, 0) >= 6
       }),
       autocompletion: false,
+      completionRate:computed(() => {
+        return [
+          {
+            element: 'Level total des écoles',
+            goal: 6,
+            current: schoolsStore.schools.reduce((acc, school) => acc + school.level, 0)
+          }
+        ]
+      })
     },
     {
       id: 'story4',
@@ -127,14 +152,96 @@ export const useStoryLineStore = defineStore('storyLine', () => {
       buttonLabel: 'Continuer',
       effects: () => {
         unlockStore.unlock('apprentices')
-        //setCurrentStoryLine(storyLine.find((s) => s.id === 'story6')!)
-        //setUpStoryModal()
+        setCurrentStoryLine(storyLine.find((s) => s.id === 'story6')!)
+        setUpStoryModal()
       },
       completion: computed(() => {
         return true
       }),
       autocompletion: true,
+    },{
+      id: 'story6',
+      name: 'Stockage d\'or',
+      order: 6,
+      haveCost: false,
+      buttonLabel: 'Continuer',
+      effects: () => {
+        unlockStore.unlock('vaults')
+        setCurrentStoryLine(storyLine.find((s) => s.id === 'story7')!)
+        setUpStoryModal()
+      },
+      completion: computed(() => {
+        return wizardStore.ressources.incremental.coins >= 800
+      }),
+      autocompletion: false,
+            completionRate:computed(() => {
+        return [
+          {
+            element: 'Piéces',
+            goal: 800,
+            current: wizardStore.ressources.incremental.coins
+          }
+        ]
+      })
+    },{
+      id: 'story7',
+      name: 'Continuer les recherches',
+      order: 7,
+      haveCost: false,
+      buttonLabel: 'Continuer',
+      effects: () => {
+      },
+      completion: computed(() => {
+        return schoolsStore.schools.reduce((acc, school) => acc + school.level, 0) >= 13
+      }),
+      autocompletion: false,
+      completionRate:computed(() => {
+        return [
+          {
+            element: 'Level total des écoles',
+            goal: 13,
+            current: schoolsStore.schools.reduce((acc, school) => acc + school.level, 0)
+          }
+        ]
+      })
     },
+    {
+      id: 'story8',
+      name: 'L\'atelier',
+      order: 8,
+      haveCost: false,
+      buttonLabel: 'Construit un atelier (2000 Pieces, 2000 Bois, 100 Fer',
+      effects: () => {
+        unlockStore.unlock('craftStation')
+        //  setCurrentStoryLine(storyLine.find((s) => s.id === 'story9')!)
+        //  setUpStoryModal()
+      },
+      completion: computed(() => {
+        return wizardStore.ressources.incremental.coins >= 2000 &&
+               wizardStore.ressources.incremental.wood >= 2000 &&
+               wizardStore.ressources.incremental.ironOre >= 100
+      }),
+      autocompletion: false,
+      completionRate:computed(() => {
+        return [
+          {
+            element: 'Pieces',
+            goal: 2000,
+            current: wizardStore.ressources.incremental.coins
+          },
+          {
+            element: 'Bois',
+            goal: 2000,
+            current: wizardStore.ressources.incremental.wood
+          },
+          {
+            element: 'Fer',
+            goal: 100,
+            current: wizardStore.ressources.incremental.ironOre
+          }
+        ]
+      })
+    }
   ]
 
   const currentStory = ref<StoryLine | null>(null)
@@ -223,6 +330,7 @@ export const useStoryLineStore = defineStore('storyLine', () => {
     reset,
     validateCurrentStory,
     setUpStoryModal,
+    checkStoryTrigger
   }
 })
 // NE CHARGE PAS LA STORYLINE DANS APP PAR DEFAUT A VOIR SI CA GENERE UN BUG

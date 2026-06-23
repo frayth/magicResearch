@@ -1,4 +1,6 @@
-Voici le code complet intégrant la section **Configurations** nettoyée et stylisée pour s'accorder parfaitement avec le reste de ton interface (thème sombre, boutons d'action stylisés, input propre, badges de sélection et disposition responsive en grille).
+Voici le code complet mis à jour.
+
+J'ai stylisé l'affichage du cooldown (`cooldown-badge`) pour qu'il s'intègre harmonieusement dans la ligne du sort. Il s'affiche sous forme d'un petit badge discret, utilisant la couleur bleue de la charte graphique, avec une icône d'horloge pour une identification visuelle immédiate.
 
 ```vue
 <template>
@@ -13,25 +15,49 @@ Voici le code complet intégrant la section **Configurations** nettoyée et styl
 
         <div class="spells-list">
           <div
-            v-for="apprenticeCast in apprenticeCastStore.spellsList.filter((apprenticeCast) => school.spells.find((spell) => spell.id === apprenticeCast.spellRef.id))"
+            v-for="apprenticeCast in apprenticeCastStore.spellsList.filter((apprenticeCast) =>
+              school.spells.find((spell) => spell.id === apprenticeCast.spellRef.id),
+            )"
             :key="apprenticeCast.spellRef.id"
             class="spell-item"
           >
             <span class="spell-name">{{ apprenticeCast.spellRef.name }}</span>
 
+            <div class="cooldown-badge" v-if="apprenticeCast.numberOfApprentices>0">
+              <span class="cooldown-icon">⏱️</span>
+              <span class="cooldown-value">{{ Math.round(apprenticeCast.cooldownTimeWithApprentices / 1000) }}s/Cast</span>
+            </div>
+
+            <div v-if="apprenticeCast.failureRate > 0" class="failure-rate-badge tooltip-target">
+              <span>📉 {{ apprenticeCast.failureRate }} {{ apprenticeCast.failureRate === 1 ? 'échec' : 'échecs' }}</span>
+              <div class="tooltip-box">
+                Nombre d'échecs accumulés : le temps de recharge du prochain sort sera divisé par le nombre d'échecs.
+              </div>
+            </div>
+
             <div v-if="apprenticeCast.spellRef.level < school.level" class="stepper-container">
               <div class="stepper">
                 <button
                   class="step-btn minus"
-                  @click="apprenticeCast.setNumberOfApprentice(apprenticeCast.numberOfApprentices - 1)"
+                  @click="
+                    apprenticeCast.setNumberOfApprentice(apprenticeCast.numberOfApprentices - 1)
+                  "
                   :disabled="apprenticeCast.numberOfApprentices <= 0"
-                >−</button>
+                >
+                  −
+                </button>
                 <span class="step-value">{{ apprenticeCast.numberOfApprentices }}</span>
                 <button
                   class="step-btn plus"
-                  @click="apprenticeCast.setNumberOfApprentice(apprenticeCast.numberOfApprentices + 1)"
-                  :disabled="affectedApprentices >= wizardStore.ressources.school.apprenticeCapacity"
-                >+</button>
+                  @click="
+                    apprenticeCast.setNumberOfApprentice(apprenticeCast.numberOfApprentices + 1)
+                  "
+                  :disabled="
+                    affectedApprentices >= wizardStore.ressources.school.apprenticeCapacity
+                  "
+                >
+                  +
+                </button>
               </div>
             </div>
 
@@ -50,16 +76,36 @@ Voici le code complet intégrant la section **Configurations** nettoyée et styl
           <span class="res-label">Apprentis Affectés</span>
           <div class="res-info-row">
             <span class="res-value">
-              {{ affectedApprentices }} <span class="res-sub">/ {{ wizardStore.ressources.school.apprenticeCapacity }}</span>
+              {{ affectedApprentices }}
+              <span class="res-sub">/ {{ wizardStore.ressources.school.apprenticeCapacity }}</span>
             </span>
             <div class="res-mini-gauge">
               <div
                 class="res-fill available"
-                :style="{ width: (affectedApprentices / wizardStore.ressources.school.apprenticeCapacity * 100) + '%' }"
+                :style="{
+                  width:
+                    (affectedApprentices / wizardStore.ressources.school.apprenticeCapacity) * 100 +
+                    '%',
+                }"
               ></div>
             </div>
           </div>
         </div>
+      </div>
+
+      <div class="reset-container">
+        <button
+          class="reset-btn"
+          @click="apprenticeCastStore.resetApprentices()"
+          :disabled="affectedApprentices === 0"
+        >
+          <span class="reset-icon">🔄</span> Réinitialiser
+        </button>
+      </div>
+
+      <div class="cost-summary">
+        <span class="res-label">Coût moyen par seconde</span>
+        <span class="res-value mana-cost">{{ totalaverageManaCost }} <span class="res-sub">mana/s</span></span>
       </div>
     </footer>
 
@@ -69,24 +115,31 @@ Voici le code complet intégrant la section **Configurations** nettoyée et styl
       </header>
 
       <div class="config-grid">
-        <div class="config-card current-panel">
+        <div class="config-card current-panel" v-if="selectedConfiguration">
           <h4 class="config-card-title">Profil Sélectionné</h4>
-          <div v-if="selectedConfiguration" class="selected-box">
+          <div class="selected-box">
             <div class="selected-info">
               <span class="config-badge">Actif</span>
               <span class="selected-name">{{ selectedConfiguration.name }}</span>
             </div>
             <div class="action-row">
-              <button class="action-btn save" @click="apprenticeCastStore.saveConfiguration(selectedConfiguration.name)">Sauvegarder</button>
-              <button class="action-btn delete" @click="deleteConfiguration(selectedConfiguration.name)">Supprimer</button>
+              <button
+                class="action-btn save"
+                @click="apprenticeCastStore.saveConfiguration(selectedConfiguration.name)"
+              >
+                Sauvegarder
+              </button>
+              <button
+                class="action-btn delete"
+                @click="deleteConfiguration(selectedConfiguration.name)"
+              >
+                Supprimer
+              </button>
             </div>
-          </div>
-          <div v-else class="empty-state">
-            <p>Aucune configuration chargée</p>
           </div>
         </div>
 
-        <div class="config-card save-panel">
+        <div class="config-card save-panel" :class="{ 'full-width': !selectedConfiguration }">
           <h4 class="config-card-title">Nouveau Profil</h4>
           <div class="input-group">
             <input
@@ -95,7 +148,7 @@ Voici le code complet intégrant la section **Configurations** nettoyée et styl
               placeholder="Nom de la configuration"
               maxlength="12"
               class="config-input"
-            >
+            />
             <button
               class="action-btn create"
               @click="apprenticeCastStore.saveConfiguration(saveName)"
@@ -116,7 +169,7 @@ Voici le code complet intégrant la section **Configurations** nettoyée et styl
               v-for="config in apprenticeCastStore.configurations"
               :key="config.name"
               class="config-item"
-              :class="{ 'selected': selectedConfiguration?.name === config.name }"
+              :class="{ selected: selectedConfiguration?.name === config.name }"
             >
               <button class="load-btn" @click="loadConfiguration(config)">
                 <span class="load-icon">💾</span>
@@ -131,38 +184,50 @@ Voici le code complet intégrant la section **Configurations** nettoyée et styl
 </template>
 
 <script setup lang="ts">
-import { useApprenticeCastStore } from '@/stores/apprenticeCast';
-import { useSchoolsStore } from '@/stores/schools';
-import { useWizardStore } from '@/stores/wizard';
-import type { ConfigurationCastApprenticeData } from '@/types/ressources';
-import { computed, ref } from 'vue';
 
-const apprenticeCastStore = useApprenticeCastStore();
-const schoolsStore = useSchoolsStore();
-const wizardStore = useWizardStore();
+import { useApprenticeCastStore } from '@/stores/apprenticeCast'
+import { useSchoolsStore } from '@/stores/schools'
+import { useWizardStore } from '@/stores/wizard'
+import type { ConfigurationCastApprenticeData } from '@/types/ressources'
+import { computed, ref } from 'vue'
+
+const apprenticeCastStore = useApprenticeCastStore()
+const schoolsStore = useSchoolsStore()
+const wizardStore = useWizardStore()
 
 const affectedApprentices = computed(() => {
-  return apprenticeCastStore.spellsList.reduce((acc,curr)=>{
-    return acc + curr.numberOfApprentices;
-  },0);
-});
+  return apprenticeCastStore.spellsList.reduce((acc, curr) => {
+    return acc + curr.numberOfApprentices
+  }, 0)
+})
 
-const selectedConfiguration = ref<ConfigurationCastApprenticeData | null>(null);
-const saveName = ref('');
+const selectedConfiguration = ref<ConfigurationCastApprenticeData | null>(null)
+const saveName = ref('')
 
 const nameIsValid = computed(() => {
-  return saveName.value.length > 0 && !apprenticeCastStore.configurations.some(config => config.name === saveName.value) && saveName.value.trim() !== '' && saveName.value.length<= 12 ;
-});
+  return (
+    saveName.value.length > 0 &&
+    !apprenticeCastStore.configurations.some((config) => config.name === saveName.value) &&
+    saveName.value.trim() !== '' &&
+    saveName.value.length <= 12
+  )
+})
 
-function loadConfiguration(config:ConfigurationCastApprenticeData){
-  selectedConfiguration.value = config;
-  apprenticeCastStore.loadConfiguration(config.configuration);
+function loadConfiguration(config: ConfigurationCastApprenticeData) {
+  selectedConfiguration.value = config
+  apprenticeCastStore.loadConfiguration(config.configuration)
 }
 
-function deleteConfiguration(name:string){
-  apprenticeCastStore.deleteConfiguration(name);
-  selectedConfiguration.value = null;
+function deleteConfiguration(name: string) {
+  apprenticeCastStore.deleteConfiguration(name)
+  selectedConfiguration.value = null
 }
+
+const totalaverageManaCost = computed(() => {
+  return apprenticeCastStore.spellsList.reduce((acc, curr) => {
+    return acc + (curr.averageManaCost ?? 0)
+  }, 0)
+})
 </script>
 
 <style scoped>
@@ -238,6 +303,80 @@ function deleteConfiguration(name:string){
   font-size: 0.9rem;
   font-weight: 700;
   color: #f8fafc;
+  flex: 1;
+}
+
+/* COOLDOWN STYLES */
+.cooldown-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  color: #3b82f6;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+  justify-content: center;
+}
+
+.cooldown-icon {
+  font-size: 0.8rem;
+}
+
+/* FAILURE RATE & TOOLTIP STYLES */
+.failure-rate-badge {
+  font-size: 0.75rem;
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  cursor: help;
+  white-space: nowrap;
+}
+
+.tooltip-target {
+  position: relative;
+}
+
+.tooltip-box {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) scale(0.95);
+  background: #1e293b;
+  border: 1px solid #475569;
+  color: #e2e8f0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  width: 200px;
+  text-wrap: wrap;
+  text-align: center;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  z-index: 50;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.tooltip-box::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: #1e293b transparent transparent transparent;
+}
+
+.tooltip-target:hover .tooltip-box {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
 }
 
 /* STEPPER MECHANICS */
@@ -271,7 +410,9 @@ function deleteConfiguration(name:string){
   cursor: pointer;
   text-align: center;
   font-weight: bold;
-  transition: background 0.2s, opacity 0.2s;
+  transition:
+    background 0.2s,
+    opacity 0.2s;
 }
 
 .step-btn:hover:not(:disabled) {
@@ -306,6 +447,9 @@ function deleteConfiguration(name:string){
   border: 1px solid #334155;
   border-radius: 16px;
   margin-bottom: 24px;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
 }
 
 .resource-item {
@@ -374,6 +518,60 @@ function deleteConfiguration(name:string){
   transition: width 0.3s ease;
 }
 
+/* RESET BUTTON MECHANICS */
+.reset-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.reset-btn {
+  all: unset;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #1e293b;
+  border: 1px solid #334155;
+  color: #94a3b8;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+}
+
+.reset-btn:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #ef4444;
+}
+
+.reset-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.reset-icon {
+  font-size: 0.85rem;
+}
+
+/* COST SUMMARY */
+.cost-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  text-align: right;
+  flex: 1;
+}
+
+.mana-cost {
+  color: #3b82f6;
+}
+
 /* BLOC CONFIGURATIONS */
 .config-section {
   border-top: 1px solid #334155;
@@ -388,7 +586,7 @@ function deleteConfiguration(name:string){
 
 @media (max-width: 900px) {
   .config-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
   }
 }
 
@@ -399,6 +597,11 @@ function deleteConfiguration(name:string){
   padding: 16px;
   display: flex;
   flex-direction: column;
+  transition: all 0.2s ease;
+}
+
+.config-card.save-panel.full-width {
+  grid-column: span 2;
 }
 
 .config-card-title {
@@ -410,7 +613,6 @@ function deleteConfiguration(name:string){
   margin: 0 0 12px 0;
 }
 
-/* Profil Sélectionné Panel */
 .selected-box {
   background: #0f172a;
   border: 1px solid #334155;
@@ -462,26 +664,24 @@ function deleteConfiguration(name:string){
   flex: 1;
 }
 
-.action-btn.save { background: #1e293b; border: 1px solid #334155; color: #f8fafc; }
-.action-btn.save:hover { background: #334155; }
-.action-btn.delete { background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #ef4444; }
-.action-btn.delete:hover { background: #ef4444; color: white; }
-
-.empty-state {
-  background: #0f172a;
-  border: 1px dashed #334155;
-  border-radius: 12px;
-  padding: 24px;
-  text-align: center;
-  color: #64748b;
-  font-size: 0.8rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
+.action-btn.save {
+  background: #1e293b;
+  border: 1px solid #334155;
+  color: #f8fafc;
+}
+.action-btn.save:hover {
+  background: #334155;
+}
+.action-btn.delete {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #ef4444;
+}
+.action-btn.delete:hover {
+  background: #ef4444;
+  color: white;
 }
 
-/* Nouveau Profil Panel */
 .input-group {
   display: flex;
   flex-direction: column;
@@ -521,7 +721,6 @@ function deleteConfiguration(name:string){
   transform: translateY(-1px);
 }
 
-/* Charger Profil Panel */
 .load-panel {
   grid-column: span 2;
 }
@@ -592,6 +791,29 @@ function deleteConfiguration(name:string){
 
 /* RESPONSIVE MOBILE GENERAL */
 @media (max-width: 600px) {
+  .resource-footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .reset-container {
+    justify-content: flex-start;
+  }
+
+  .reset-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .cost-summary {
+    align-items: flex-start;
+    text-align: left;
+    border-top: 1px solid #334155;
+    padding-top: 12px;
+    flex: none;
+  }
+
   .spell-item {
     flex-direction: column;
     align-items: stretch;

@@ -17,7 +17,7 @@ import { useMathStore } from '@/stores/math'
 import type { multipliersRessources } from '@/types/ressources'
 
 interface Props {
-  name: "mana" | "water" | "coins" | "wood"
+  name: "mana" | "water" | "coins" | "wood" | "ironOre"
 }
 
 const props = defineProps<Props>()
@@ -54,6 +54,8 @@ const text = computed(() => {
       return "Rassembler de l'or"
     case "wood":
       return "Rassembler du bois"
+    case "ironOre":
+      return "Mine du fer"
     default:
       return "undefined production"
   }

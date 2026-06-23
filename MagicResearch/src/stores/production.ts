@@ -41,6 +41,15 @@ export const useProductionStore = defineStore('production', () => {
     ) {
       wizardStore.ressources.incremental.wood = wizardStore.ressources.limits.woodmax
     }
+    if (
+      wizardStore.ressources.incremental.fire  &&
+      wizardStore.ressources.incremental.fire > wizardStore.ressources.limits.firemax
+    ) {
+      wizardStore.ressources.incremental.fire = wizardStore.ressources.limits.firemax
+    }
+    if(wizardStore.ressources.incremental.ironOre && wizardStore.ressources.incremental.ironOre > wizardStore.ressources.limits.ironOremax){
+      wizardStore.ressources.incremental.ironOre = wizardStore.ressources.limits.ironOremax
+    }
   }
   function updateProduction() {
     if (wizardStore.ressourcesNeedToBeUpdated) {
@@ -73,7 +82,7 @@ export const useProductionStore = defineStore('production', () => {
 
   function mergeRessources(){
     for( const [key, value] of Object.entries(wizardStore.ressources.incremental)) {
-      const incrementalRessources=["mana","water","stone","coins","wood"]
+      const incrementalRessources=["mana","water","stone","coins","wood","ironOre","fire"]
       if(incrementalRessources.includes(key)){
 
         switch(key){
@@ -86,6 +95,10 @@ export const useProductionStore = defineStore('production', () => {
           case "coins":wizardStore.ressources.incremental.coins+= mathStore.transformPercentage(wizardStore.ressources.production.prodcoins,wizardStore.ressources.multipliers.prodcoins) / mathStore.RatioTimer()
           break;
           case "wood":wizardStore.ressources.incremental.wood+= mathStore.transformPercentage(wizardStore.ressources.production.prodwood,wizardStore.ressources.multipliers.prodwood) / mathStore.RatioTimer()
+          break;
+          case "ironOre":wizardStore.ressources.incremental.ironOre+= mathStore.transformPercentage(wizardStore.ressources.production.prodironOre,wizardStore.ressources.multipliers.prodironOre) / mathStore.RatioTimer()
+          break;
+          case "fire":wizardStore.ressources.incremental.fire+= mathStore.transformPercentage(wizardStore.ressources.production.prodfire,wizardStore.ressources.multipliers.prodfire) / mathStore.RatioTimer()
           break;
         }
       }

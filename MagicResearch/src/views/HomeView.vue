@@ -10,10 +10,11 @@ import ManaBar from '@/components/UI/ManaBar.vue'
 import { useSaveStore } from '@/stores/save'
 import { useUnlockStore } from '@/stores/unlock'
 import ApprenticeCast from '@/components/elements/ApprenticeCast.vue'
-
+import { exportItemsData } from '@/data/items.data'
 const wizardStore = useWizardStore()
 const saveStore = useSaveStore()
 const unlockStore = useUnlockStore()
+const items = exportItemsData()
 //v-if="unlockStore.checkUnlockStatus('apprentices')"
 </script>
 
@@ -32,7 +33,13 @@ const unlockStore = useUnlockStore()
       </ul>
     </div>
     <div>
-
+      Items
+      <ul>
+        <li v-for="item in items" :key="item.id">
+          {{ item.name }}
+          <img :src="item.imageUrl" :alt="item.name">
+        </li>
+      </ul>
     </div>
     <SchoolsElement v-if="unlockStore.checkUnlockStatus('Researcher')" />
     <MagicElement />

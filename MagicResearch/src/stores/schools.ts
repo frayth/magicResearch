@@ -22,7 +22,7 @@ export const useSchoolsStore = defineStore('schools', () => {
   })
   const illusionSchools = reactive<School>({
     name: 'illusion',
-    level: 10,
+    level: 1,
     baseXp: 100,
     currentXp: 0,
     exponentielXp: 2,
@@ -97,13 +97,16 @@ export const useSchoolsStore = defineStore('schools', () => {
     school.numberOfResearcher--
   }
 
-  function castSpell(spell: Spell) {
+  function castSpell(spell: Spell):{status:boolean,reason?:'cooldown' | 'cost'} {
     if (spell.currentCooldown > 0) {
-      console.error('spell is on cooldown')
-      return
+      return {status:false,reason:'cooldown'}
+    }
+    if(!wizardStore.checkIfRessourceAreEnough({mana: spell.cost})) {
+      return {status:false,reason:'cost'}
     }
     spell.currentCooldown = spell.cooldown
     spell.effect()
+    return {status:true}
   }
 
   function timeForLevelUp(school: School) {

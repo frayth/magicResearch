@@ -11,7 +11,10 @@ export type BuildingId =
   | 'waterTank'
   | 'lumberYard'
   | 'ResearchCabin'
-  | 'ApprenticeDorms';
+  | 'ApprenticeDorms'
+  | 'vaults'
+  | 'manaGeyser'
+  | 'furnace';
 
 
 export function getBuildingList(): Building[] {
@@ -26,10 +29,12 @@ export function getBuildingList(): Building[] {
       id:"puitDeMana",
       levelMax:100,
       level:0,
+      currentlevel:0,
+      evolutif:false,
       easings:'expo',
       multiplier:100,
       effects:function (this:Building) {
-        wizardStore.ressources.production.prodmana+= addValue(0.5,this.level,this.multiplier)
+        wizardStore.ressources.production.prodmana+= addValue(0.5,this.currentlevel,this.multiplier)
       },
       cost:[
         {
@@ -46,10 +51,12 @@ export function getBuildingList(): Building[] {
       id:"cascade",
       levelMax:10,
       level:0,
+      currentlevel:0,
+      evolutif:false,
       easings:'expo',
       multiplier:100,
       effects:function (this:Building) {
-        wizardStore.ressources.production.prodwater+=addValue(0.5,this.level,this.multiplier)
+        wizardStore.ressources.production.prodwater+=addValue(0.5,this.currentlevel,this.multiplier)
       },
       cost:[
         {
@@ -66,6 +73,8 @@ export function getBuildingList(): Building[] {
       id:'eclatdemana',
       levelMax:50,
       level:0,
+      currentlevel:0,
+      evolutif:false,
       easings:'expo',
       cost:[{
         level:0,
@@ -76,13 +85,15 @@ export function getBuildingList(): Building[] {
       }],
       multiplier:100,
       effects:function (this:Building) {
-        wizardStore.ressources.limits.manamax+= addValue(100,this.level,this.multiplier)
+        wizardStore.ressources.limits.manamax+= addValue(100,this.currentlevel,this.multiplier)
       }
     },{
       name:'Entrepot',
       id:'entrepot',
       levelMax:20,
       level:0,
+      currentlevel:0,
+      evolutif:false,
       easings:'expo',
       cost:[{
         level:0,
@@ -94,8 +105,9 @@ export function getBuildingList(): Building[] {
       }],
       multiplier:100,
       effects:function (this:Building) {
-        wizardStore.ressources.limits.stonemax+=addValue(400,this.level,this.multiplier)
-        wizardStore.ressources.limits.woodmax+=addValue(400,this.level,this.multiplier)
+        wizardStore.ressources.limits.stonemax+=addValue(400,this.currentlevel,this.multiplier)
+        wizardStore.ressources.limits.woodmax+=addValue(400,this.currentlevel,this.multiplier)
+        wizardStore.ressources.limits.ironOremax+=addValue(200,this.currentlevel,this.multiplier)
       }
     },
     {
@@ -103,6 +115,8 @@ export function getBuildingList(): Building[] {
       id:'waterTank',
       levelMax:20,
       level:0,
+      currentlevel:0,
+      evolutif:false,
       easings:'expo',
       cost:[{
         level:0,
@@ -115,13 +129,15 @@ export function getBuildingList(): Building[] {
       }],
       multiplier:100,
       effects:function (this:Building) {
-        wizardStore.ressources.limits.watermax+=addValue(400,this.level,this.multiplier)
+        wizardStore.ressources.limits.watermax+=addValue(400,this.currentlevel,this.multiplier)
       }
     },{
       name:'Scierie',
       id:'lumberYard',
       levelMax:20,
       level:0,
+      currentlevel:0,
+      evolutif:false,
       easings:'expo',
       cost:[{
         level:0,
@@ -134,7 +150,7 @@ export function getBuildingList(): Building[] {
       }],
       multiplier:100,
       effects:function (this:Building) {
-        wizardStore.ressources.production.prodwood+=addValue(1,this.level,this.multiplier)
+        wizardStore.ressources.production.prodwood+=addValue(1,this.currentlevel,this.multiplier)
       }
     },
     {
@@ -142,6 +158,8 @@ export function getBuildingList(): Building[] {
       id:'ResearchCabin',
       levelMax:100,
       level:0,
+      currentlevel:0,
+      evolutif:false,
       easings:'expo',
       cost:[{
         level:0,
@@ -154,14 +172,15 @@ export function getBuildingList(): Building[] {
       }],
       multiplier:100,
       effects:function (this:Building) {
-        wizardStore.ressources.school.researcherCapacity+=addValue(1,this.level,this.multiplier)
+        wizardStore.ressources.school.researcherCapacity+=addValue(1,this.currentlevel,this.multiplier)
       }
     },{
-
       name:'Dortoir pour apprentis',
       id:'ApprenticeDorms',
       levelMax:100,
       level:0,
+      currentlevel:0,
+      evolutif:false,
       easings:'expo',
       cost:[{
         level:0,
@@ -174,10 +193,71 @@ export function getBuildingList(): Building[] {
       }],
       multiplier:100,
       effects:function (this:Building) {
-        wizardStore.ressources.school.apprenticeCapacity+=addValue(1,this.level,this.multiplier)
-        wizardStore.ressources.school.numberOfApprentice+=addValue(1,this.level,this.multiplier)
+        wizardStore.ressources.school.apprenticeCapacity+=addValue(1,this.currentlevel,this.multiplier)
+        wizardStore.ressources.school.numberOfApprentice+=addValue(1,this.currentlevel,this.multiplier)
       }
 
+    },{
+      name:'Coffre-fort',
+      id:'vaults',
+      levelMax:100,
+      level:0,
+      currentlevel:0,
+      evolutif:false,
+      easings:'expo',
+      cost:[{
+        level:0,
+        cost:{
+          coins:{minValue:500,maxValue:500000},
+          stone:{minValue:600,maxValue:25000},
+        }
+      }],
+      multiplier:100,
+      effects:function (this:Building) {
+        wizardStore.ressources.limits.coinsmax+=addValue(20000,this.currentlevel,this.multiplier)
+      }
+    },{
+      name:'Geysère de mana',
+      id:'manaGeyser',
+      levelMax:100,
+      level:0,
+      currentlevel:0,
+      evolutif:false,
+      easings:'expo',
+      cost:[{
+        level:0,
+        cost:{
+          coins:{minValue:600,maxValue:500000},
+          water:{minValue:150,maxValue:25000},
+          ironOre:{minValue:30,maxValue:10000}
+        }
+      }],
+      multiplier:100,
+      effects:function (this:Building) {
+        wizardStore.ressources.production.prodmana+=addValue(2,this.currentlevel,this.multiplier)
+      }
+    },{
+      name: "Fourneau",
+      id: "furnace",
+      level: 0,
+      currentlevel:0,
+      evolutif:true,
+      levelMax: 100,
+      easings: "expo",
+      multiplier: 100,
+      effects: function (this: Building): void {
+        wizardStore.ressources.production.prodfire+=addValue(2,this.currentlevel,this.multiplier)
+        wizardStore.ressources.limits.firemax+=addValue(500,this.currentlevel,this.multiplier)
+        wizardStore.ressources.production.prodwood-=addValue(3,this.currentlevel,100)
+      },
+      cost: [{
+        level: 0,
+        cost: {
+          coins:{minValue:1500,maxValue:1000000},
+          stone:{minValue:3000,maxValue:500000},
+          ironOre:{minValue:100,maxValue:20000}
+        }
+      }]
     }
   ]
 

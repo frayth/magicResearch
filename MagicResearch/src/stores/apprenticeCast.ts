@@ -82,6 +82,11 @@ function saveConfiguration(name: string) {
   function deleteConfiguration(name:string) {
     configurations.value = configurations.value.filter((config) => config.name !== name)
   }
-  return { init, spellsList, actualConfiguration, configurations, saveConfiguration, loadConfiguration, resetApprentices, deleteConfiguration }
+  function resetall(){
+    resetApprentices()
+    actualConfiguration.value = []
+    configurations.value = []
+  }
+  return { init, spellsList, actualConfiguration, configurations, saveConfiguration, loadConfiguration, resetApprentices, deleteConfiguration, resetall }
 
 })

@@ -21,6 +21,7 @@ export function useIllusionSchoolSpells() {
     {
       name: 'Tour de magie',
       id: 'magicshow',
+      type: 'none',
       level: 1,
       buff: false,
       cooldown: 0,
@@ -37,9 +38,9 @@ export function useIllusionSchoolSpells() {
         }
       },
     },{
-
       name: 'Spectacle du vent',
       id: 'windShow',
+      type: 'air',
       level: 2,
       buff: false,
       cooldown: 0,
@@ -55,7 +56,25 @@ export function useIllusionSchoolSpells() {
           wizardStore.addRessources('coins', math.RandomValue(100, 150))
         }
       },
-
+    },{
+      name: 'Spectacle de bulle',
+      id: 'bubbleShow',
+      type: 'water',
+      level: 3,
+      buff: false,
+      cooldown: 0,
+      cost: 150,
+      currentCooldown: 0,
+      apprenticeCastTime: 60000,
+      description:
+        'Créer un spectacle de divertissement basé sur l\'eau. &coins.value:+350~450& ',
+      effect(this: Spell) {
+        const spellIsCastable = SpellIsCastable(this)
+        if (spellIsCastable) {
+          wizardStore.removeResources('mana', this.cost)
+          wizardStore.addRessources('coins', math.RandomValue(350, 450))
+        }
+      },
     }
   ]
   const buffsList: Spell[] = spells.filter((spell) => spell.buff)

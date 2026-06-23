@@ -3,10 +3,10 @@ import { timestamp, useLocalStorage, type RemovableRef } from '@vueuse/core'
 import { useWizardStore } from '@/stores/wizard'
 import { useStoryLineStore } from '@/stores/storyLine'
 import { useBoucleManagerStore } from './boucleManager'
-import { defaultRessource, getDefaultRessource } from '@/data/defaultValue.data'
+import {  getDefaultRessource } from '@/data/defaultValue.data'
 import { useAppStore } from './app'
 import { saveCooldown } from '@/data/boucle.data'
-
+import { useApprenticeCastStore } from './apprenticeCast'
 import CheatModal from '@/components/Modals/elements/cheatModal.vue'
 type StorageMap = {
   ressources: SaveRessources
@@ -16,10 +16,12 @@ type StorageMap = {
   buffs: Buff[]
   storyLine: SaveStoryLine
   keys: SaveKeys
+  apprenticeCast: SaveApprenticeCast
 }
 import { ref, toRaw } from 'vue'
 import type {
   Buff,
+  SaveApprenticeCast,
   SaveBuildings,
   SaveKeys,
   SaveRessources,
@@ -42,6 +44,7 @@ export const useSaveStore = defineStore('UseSave', () => {
   const schoolsStore = useSchoolsStore()
   const storyLineStore = useStoryLineStore()
   const boucle = useBoucleManagerStore()
+  const apprenticeCastStore = useApprenticeCastStore()
   const coolDownSave = ref({
     lastSave: 0,
     cooldown: saveCooldown,
@@ -54,6 +57,7 @@ export const useSaveStore = defineStore('UseSave', () => {
   let saveBuffs: Buff[] | null = null
   let saveStoryLine: SaveStoryLine | null = null
   let keys: SaveKeys | null = null
+  let saveApprenticeCast: SaveApprenticeCast | null = null
 
   async function saveData() {
     if(coolDownSave.value.lastSave + boucle.interval < coolDownSave.value.cooldown) {
@@ -74,9 +78,16 @@ export const useSaveStore = defineStore('UseSave', () => {
       console.error('error dans le systeme de sauvegarde')
       return
     }
+    const currentApprenticeCast:SaveApprenticeCast = {
+      actualConfiguration: apprenticeCastStore.actualConfiguration,
+      configurations: apprenticeCastStore.configurations
+    }
+    saveInStorage('apprenticeCast', currentApprenticeCast)
+
     const currentBuildings =buildingsStore.wizardBuildings.map((el) => ({
       id: el.id,
       level: el.level,
+      currentLevel: el.currentlevel
     }))
 
     saveInStorage('buildings', currentBuildings)
@@ -108,7 +119,7 @@ export const useSaveStore = defineStore('UseSave', () => {
     saveInStorage('schools', saveSchool)
 
     saveInStorage('buffs', wizardStore.buffs)
-
+    const apprenticeKey = await getHash(JSON.stringify(currentApprenticeCast))
     const buildingKey = await getHash(JSON.stringify(currentBuildings))
     const storyLineKey = await getHash(JSON.stringify(currentStoryLine))
     const unlockKey = await getHash(JSON.stringify(currentUnlocks))
@@ -132,6 +143,7 @@ export const useSaveStore = defineStore('UseSave', () => {
       ressourcesKey,
       schoolKey,
       buffKey,
+      apprenticeKey,
     })
   }
 
@@ -143,9 +155,14 @@ export const useSaveStore = defineStore('UseSave', () => {
     let uncorruptSave = true
     //console.log('loadsave', localStorage.getItem('ressources'))
     keys = loadFromStorage('keys')
+    saveApprenticeCast = loadFromStorage('apprenticeCast')
+    const apprenticeKey = await getHash(JSON.stringify(saveApprenticeCast))
+    if (apprenticeKey !== keys?.apprenticeKey) {
+      console.log('apprentice key is not correct')
+      uncorruptSave = false
+    }
 
     saveSchool = loadFromStorage('schools')
-
     const schoolKey = await getHash(JSON.stringify(saveSchool))
     if (schoolKey !== keys?.schoolKey) {
       console.log('school key is not correct')
@@ -212,12 +229,14 @@ export const useSaveStore = defineStore('UseSave', () => {
         wizardStore.buffs.push(newBuff)
       }
     })
+    apprenticeCastStore.loadConfiguration(saveApprenticeCast?.actualConfiguration || [])
+    apprenticeCastStore.configurations = saveApprenticeCast?.configurations || []
     unlockStore.unlocked = saveUnlocks!
     schoolsStore.setSchools(saveSchool!)
     wizardStore.storyProgress = saveStoryLine!
     storyLineStore.initStoryline()
     saveBuildings!.forEach((building) => {
-      buildingsStore.addBuilding(building.id, building.level)
+      buildingsStore.addBuilding(building.id, building.level,building.currentLevel)
     })
   }
 
@@ -229,6 +248,7 @@ export const useSaveStore = defineStore('UseSave', () => {
       unlockKey: '',
       buffKey: '',
       storyLineKey: '',
+      apprenticeKey:''
     }
     saveInStorage('keys',keys)
     saveStoryLine = { progress: 0, completed: false }
@@ -259,6 +279,11 @@ export const useSaveStore = defineStore('UseSave', () => {
     saveInStorage('buildings',saveBuildings)
     saveUnlocks = []
     saveInStorage('unlocks',saveUnlocks)
+    saveApprenticeCast = {
+      actualConfiguration: [],
+      configurations: []
+    }
+    saveInStorage('apprenticeCast',saveApprenticeCast)
     storyLineStore.initStoryline()
     appStore.app.init = true
   }
@@ -279,6 +304,7 @@ export const useSaveStore = defineStore('UseSave', () => {
     unlockStore.reset()
     wizardStore.reset()
     buildingsStore.reset()
+    apprenticeCastStore.resetall()
     await initSave()
     boucle.lauchBoucle()
   }

@@ -21,6 +21,10 @@ export type UnlocksNames =
   | 'cabinResearcher'
   | 'apprenticeDorm'
   | 'apprentices'
+  | 'vaults'
+  | 'ironOre'
+  | 'manaGeyser'
+  | 'craftStation'
 
 export function exportUnlocksData() {
   const wizardStore = useWizardStore()
@@ -114,7 +118,27 @@ export function exportUnlocksData() {
       conditions: computed(() => {
         return false
       }),
-
+    },
+    {
+      name: 'vaults',
+      conditions: computed(() => {
+        return false
+      }),
+    },{
+      name:'ironOre',
+      conditions: computed(() => {
+        return buildingsStore.wizardBuildings.some((building)=>building.id ==='waterTank' ) && wizardStore.ressources.incremental.stone >= 100
+      })
+    },{
+      name:"manaGeyser",
+      conditions: computed(() => {
+          return wizardStore.ressources.incremental.ironOre >= 10
+      })
+    },{
+      name:"craftStation",
+      conditions: computed(() => {
+        return false
+      })
     }
   ]
 

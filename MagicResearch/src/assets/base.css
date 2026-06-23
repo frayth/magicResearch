@@ -90,12 +90,14 @@ body {
 
 }
 .fire{
-  color: red;
+  color: rgb(175, 5, 5);
 
 }
 .mana{
   color: purple;
-
+}
+.ironOre{
+  color: rgb(102, 60, 4);
 }
 .richText {
   display: inline-flex;

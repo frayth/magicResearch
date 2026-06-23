@@ -8,7 +8,11 @@
         <div class="resource-values">
           <span class="current">{{ Math.floor(wizardStore.ressources.incremental[res]) }}</span>
           <span class="separator">/</span>
-          <span class="max">{{ wizardStore.ressources.limits[res + 'max' as keyof typeof wizardStore.ressources.limits] }}</span>
+          <span class="max">{{
+            wizardStore.ressources.limits[
+              (res + 'max') as keyof typeof wizardStore.ressources.limits
+            ]
+          }}</span>
         </div>
       </div>
     </div>
@@ -16,14 +20,30 @@
 </template>
 
 <script setup lang="ts">
-import { useWizardStore } from '@/stores/wizard';
-import RichText from '../UI/RichText.vue';
-import type { IncrementalRessources } from '@/types/ressources';
-
+import { useWizardStore } from '@/stores/wizard'
+import RichText from '../UI/RichText.vue'
+import type { IncrementalRessources } from '@/types/ressources'
+import { computed } from 'vue'
+import { useUnlockStore } from '@/stores/unlock'
+const unlockStore = useUnlockStore()
 const wizardStore = useWizardStore()
 
 // Liste pour éviter la répétition HTML
-const resourceList = Object.keys(wizardStore.ressources.incremental).map(key => key as keyof IncrementalRessources)
+const ressourcesUnlocked = computed<Record<keyof IncrementalRessources, boolean>>(() => {
+  return {
+    mana: true,
+    water:true,
+    wood: unlockStore.checkUnlockStatus('Forêt'),
+    ironOre: unlockStore.checkUnlockStatus('ironOre'),
+    coins: true,
+    stone: true,
+  }
+})
+const resourceList = computed(() => {
+  return Object.keys(wizardStore.ressources.incremental)
+    .map((key) => key as keyof IncrementalRessources)
+    .filter((key) => ressourcesUnlocked.value[key])
+})
 </script>
 
 <style scoped>
@@ -43,8 +63,9 @@ const resourceList = Object.keys(wizardStore.ressources.incremental).map(key => 
   display: flex;
   flex-direction: column;
   gap: 8px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
-              0 0 0 1px rgba(15, 23, 42, 0.05);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 0 0 1px rgba(15, 23, 42, 0.05);
   transition: transform 0.2s ease;
 }
 
@@ -89,9 +110,4 @@ const resourceList = Object.keys(wizardStore.ressources.incremental).map(key => 
   font-weight: 500;
   font-size: 0.9rem;
 }
-
-
-
-
 </style>
-

@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { useUnlockStore } from './unlock'
 import { useProductionStore } from './production'
+import { useStoryLineStore } from './storyLine'
 import { useWizardStore } from './wizard'
 import { useSchoolsStore } from './schools'
 import { useSaveStore } from './save'
@@ -14,6 +15,7 @@ export const useBoucleManagerStore = defineStore('boucleManager', () => {
   const schoolsStore = useSchoolsStore()
   const productionStore = useProductionStore()
   const saveStore = useSaveStore()
+  const storyLineStore = useStoryLineStore()
   const boucleIsRunning = computed(() => boucle.value !== undefined)
   const setFramerate = (framerate: number) => {
     interval.value = 1000 / framerate
@@ -27,6 +29,7 @@ export const useBoucleManagerStore = defineStore('boucleManager', () => {
         return
       }
       inBoucle.value = true
+      storyLineStore.checkStoryTrigger()
       unlockStore.checkUnlocks()
       productionStore.updateProduction()
       wizardStore.updateWizard(interval.value)

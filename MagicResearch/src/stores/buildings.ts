@@ -11,7 +11,7 @@ export const useBuildingsStore = defineStore('buildings', () => {
 
   const wizardBuildings = ref<Building[]>([])
 
-  function addBuilding(buildingId: BuildingId, level: number=0) {
+  function addBuilding(buildingId: BuildingId, level: number=0 ,currentLevel:number=0) {
     const building = buildingsList.value.find((building) => building.id === buildingId)
     if (!building) {
       console.error('Building not found')
@@ -19,6 +19,7 @@ export const useBuildingsStore = defineStore('buildings', () => {
     }
     if(level===0){
       level = 1
+      currentLevel = 1
     }
     const buildingInWizardBuilding = wizardBuildings.value.find(
       (building) => building.id === buildingId,
@@ -29,6 +30,7 @@ export const useBuildingsStore = defineStore('buildings', () => {
     }
 
     building.level = level
+    building.currentlevel = currentLevel
     wizardBuildings.value.push(building)
     wizardStore.ressourcesNeedToBeUpdated = true
   }
@@ -39,9 +41,10 @@ export const useBuildingsStore = defineStore('buildings', () => {
       return
     }
     building.level++
+    building.currentlevel++
     wizardStore.ressourcesNeedToBeUpdated = true
   }
-  function wizardHaveBuilding(id: BuildingId) {
+  function wizardHaveBuilding(id: BuildingId): Building | undefined {
     return wizardBuildings.value.find((building) => building.id === id)
   }
 

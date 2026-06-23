@@ -1,11 +1,15 @@
 import type { Spell } from "@/types/ressources";
 import { computed, onUnmounted, ref } from "vue";
+import { useSchoolsStore } from "@/stores/schools";
+
 export type ApprenticeCast = ReturnType<typeof useApprenticeCast>;
 export function useApprenticeCast(spell:Spell) {
+  const schoolsStore = useSchoolsStore();
   const numberOfApprentices = ref(0);
   const spellRef = ref(spell);
   const cooldown = ref(spell.apprenticeCastTime/numberOfApprentices.value);
   const coolDownIsRunning = ref(false);
+  const failureRate = ref(0);
   const intervalId=ref<ReturnType<typeof setInterval> | null>(null)
   function lauch(){
     coolDownIsRunning.value = true;
@@ -13,16 +17,32 @@ export function useApprenticeCast(spell:Spell) {
       cooldown.value-=1000;
       // TODO: Implement spell casting logic
       if(cooldown.value <=0){
-        console.log(`Cast ${spellRef.value.name} with ${numberOfApprentices.value} apprentices`);
-        cooldown.value = cooldownTimeWithApprentices.value
+        const resultCast=schoolsStore.castSpell(spellRef.value);
+        if(resultCast.status || resultCast.reason ==='cooldown'){
+          console.log(`Cast ${spellRef.value.name} with ${numberOfApprentices.value} apprentices`);
+          setCooldown(cooldownTimeWithApprentices.value)
+          failureRate.value = 0;
+        }else{
+          failureRate.value < 10 ? failureRate.value++ : failureRate.value = 10;
+          console.log(`Failed to cast ${spellRef.value.name} with ${numberOfApprentices.value} apprentices`);
+          setCooldown(cooldownTimeWithApprentices.value/failureRate.value)
+        }
+
       }
     }, 500);
+  }
+  function setCooldown(time:number){
+    if(time <=1000){
+      time=1000
+    }
+    cooldown.value = time;
   }
   function stop(){
     if(intervalId.value){
       clearInterval(intervalId.value);
       intervalId.value = null;
       coolDownIsRunning.value = false;
+      failureRate.value = 0;
     }
   }
   function setNumberOfApprentice(number:number){
@@ -32,6 +52,7 @@ export function useApprenticeCast(spell:Spell) {
       return;
     }
     numberOfApprentices.value = number;
+    failureRate.value = 0;
     cooldown.value = cooldownTimeWithApprentices.value
     if(!coolDownIsRunning.value && numberOfApprentices.value > 0){
       lauch();
@@ -46,5 +67,8 @@ export function useApprenticeCast(spell:Spell) {
   onUnmounted(() => {
     stop();
   })
-    return {setNumberOfApprentice,numberOfApprentices,cooldown,coolDownIsRunning,spellRef,cooldownTimeWithApprentices}
+const averageManaCost = computed(() => {
+  return Number((spell.cost / (cooldownTimeWithApprentices.value / 1000)).toFixed(2))
+})
+    return {setNumberOfApprentice,numberOfApprentices,cooldown,coolDownIsRunning,spellRef,cooldownTimeWithApprentices,averageManaCost,failureRate}
 }

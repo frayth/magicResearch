@@ -345,6 +345,6 @@ expo:    ~0.1  (presque rien, puis boom!)
 
 
 //TODO 
-Faire la page des apprentis
-Declenchement dortoir apprenti pour la quete 5 ne marche pas / voir pour faire la refont de l'affichage de la modale
+// preparer l'atelier 
+//faire inventaire et craft
 

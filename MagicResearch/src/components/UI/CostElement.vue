@@ -7,7 +7,7 @@
           <RichText>
  &{{ key }}.name&
     </RichText>
-    <p><span :class="{notEnought:!ressourceIsEnought(key,value)}">{{ formatShowedValue(wizardStore.ressources.incremental[key]) }}</span>/{{ formatShowedValue(value!) }}</p>
+    <p><span :class="{notEnought:!ressourceIsEnought(key,value)}">{{ formatShowedValue(wizardStore.ressources.incremental[key]) }}</span>/<span :class="{notEnought:value > wizardStore.ressources.limits[`${key}max`]}">{{ formatShowedValue(value!) }}</span></p>
     </div>
 
   </div>

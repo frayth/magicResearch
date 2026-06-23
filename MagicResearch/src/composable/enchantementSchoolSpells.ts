@@ -23,6 +23,7 @@ export function useEnchantementSchoolSpells() {
     {
       name: 'Enchantement du puit de mana',
       id: 'enchantementDuPuitDeMana',
+      type: 'none',
       level: 1,
       cost: 60,
       apprenticeCastTime: 60000,
@@ -40,6 +41,41 @@ export function useEnchantementSchoolSpells() {
       currentCooldown: 0,
       description:
         'Altere un puit de mana pour produire plus de mana pour un temps limité. &mana.value:*2&',
+      effect(this: Spell) {
+        const spellIsCastable = SpellIsCastable(this)
+        const currentBuff: Buff = {
+          name: this.name,
+          duration: this.buff ? this.buff.timer : 0,
+          unique: this.buff ? this.buff.unique : false,
+          effects:this.buff? this.buff.effects : () => {},
+        }
+        if (spellIsCastable) {
+            wizardStore.removeResources('mana', this.cost)
+            wizardStore.addBuff(currentBuff)
+        }
+      },
+    },
+        {
+      name: 'Enchantement de la scierie',
+      id: 'enchantementDeLaScierie',
+      type: 'none',
+      level: 3,
+      cost: 60,
+      apprenticeCastTime: 60000,
+      buff: {
+        timer: 30000,
+        unique: true,
+        effects:()=>{
+          const lumberYard = buildingsStore.wizardBuildings.find((building) => building.id === 'lumberYard')
+          if (lumberYard) {
+            lumberYard.multiplier += 100
+          }
+        },
+      },
+      cooldown: 0,
+      currentCooldown: 0,
+      description:
+        'Altere votre scierie pour produire plus de bois pour un temps limité. &wood.value:*2&',
       effect(this: Spell) {
         const spellIsCastable = SpellIsCastable(this)
         const currentBuff: Buff = {
